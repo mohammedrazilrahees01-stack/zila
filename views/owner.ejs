@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+
+<div class="p-6">
+
+<h2 class="text-2xl mb-6">Owner Dashboard</h2>
+
+<div class="grid grid-cols-2 gap-6 mb-6">
+
+<div class="bg-gray-800 p-4">
+Total Orders: <%= orders.length %>
+</div>
+
+<div class="bg-gray-800 p-4">
+Revenue: AED <%= orders.reduce((s,o)=>s+o.total,0) %>
+</div>
+
+</div>
+
+<h3 class="text-xl mb-4">Orders</h3>
+
+<% orders.forEach(o => { %>
+<div class="mb-3 border-b border-gray-800 pb-2">
+
+Order #<%= o.id %> — AED <%= o.total %> — <%= o.status %>
+
+<form action="/update-order/<%= o.id %>" method="POST" class="mt-2">
+<select name="status" class="text-black">
+<option>Pending</option>
+<option>Shipped</option>
+<option>Delivered</option>
+<option>Cancelled</option>
+</select>
+<button class="bg-green-500 px-2 py-1">Update</button>
+</form>
+
+</div>
+<% }) %>
+
+</div>
+
+<%- include('partials/footer') %>

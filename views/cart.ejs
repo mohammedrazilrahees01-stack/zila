@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+
+<div class="p-10">
+
+<h1 class="text-2xl mb-6">Your Cart</h1>
+
+<% cart.forEach((item, index) => { %>
+
+<div class="mb-4 border-b border-gray-800 pb-3">
+
+<p class="text-lg"><%= item.name %></p>
+<p class="text-gray-400">Size: <%= item.size %></p>
+<p>AED <%= item.price %></p>
+
+<form action="/remove-cart/<%= index %>" method="POST">
+<button class="text-red-500 text-sm">Remove</button>
+</form>
+
+</div>
+
+<% }) %>
+
+<a href="/checkout" class="bg-white text-black px-6 py-3">Proceed to Checkout</a>
+
+</div>
+
+<!-- UPSELL -->
+<div class="p-10">
+
+<h2 class="text-xl mb-4">You may also like</h2>
+
+<div class="grid md:grid-cols-4 gap-6">
+
+<% upsell.forEach(p => { %>
+
+<a href="/product/<%= p.id %>">
+<img src="/images/<%= p.image %>" class="w-full h-48 object-cover">
+<p><%= p.name %></p>
+</a>
+
+<% }) %>
+
+</div>
+
+</div>
+
+<script>
+fetch('/track-cart', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ cart: "active" })
+});
+</script>
+
+<%- include('partials/footer') %>

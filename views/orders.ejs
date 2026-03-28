@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+
+<div class="p-6">
+    <h2 class="text-2xl mb-4">Orders</h2>
+
+    <% orders.forEach(order => { %>
+        <div class="mb-3">
+            Order #<%= order.id %> - AED <%= order.total %> - <%= order.status %>
+        </div>
+    <% }) %>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<div class="p-10 max-w-3xl mx-auto">
+
+<h1 class="text-2xl mb-6">Checkout</h1>
+
+<% cart.forEach(i => { %>
+<div class="mb-2">
+<%= i.name %> x <%= i.qty %> — AED <%= i.price * i.qty %>
+</div>
+<% }) %>
+
+<h3 class="mt-4 mb-4">Total: AED <%= total %></h3>
+
+<form action="/place-order" method="POST" class="space-y-4">
+
+<select name="payment" class="w-full p-3 text-black">
+<option value="cod">Cash on Delivery</option>
+<option value="manual">Manual Payment (QR)</option>
+</select>
+
+<input name="address" placeholder="Delivery Address" class="w-full p-3 text-black">
+
+<button class="bg-white text-black px-6 py-3 w-full">
+Place Order
+</button>
+
+</form>
+
+</div>
+
+<%- include('partials/footer') %>

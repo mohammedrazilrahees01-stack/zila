@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zila Collections</title>
+
+<!-- Added Poppins Font for that premium bold look -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f8bc45; /* Yellow background to match image */
+        color: #111;
+        overflow-x: hidden;
+    }
+</style>
+</head>
+<body>
+
+<!-- Header positioned absolutely so it floats over the hero section -->
+<header class="absolute w-full top-0 left-0 flex justify-between items-center px-8 md:px-16 py-6 z-50 text-white">
+
+    <!-- LOGO -->
+    <a href="/" class="flex items-center gap-3">
+        <!-- Filter added to turn your dark logo white to match the aesthetic, remove style if your logo is already white -->
+        <img src="/images/zila.png" class="h-8 md:h-10" style="filter: brightness(0) invert(1);">
+    </a>
+
+    <!-- NAV (Centered like the image) -->
+    <nav class="hidden md:flex gap-10 text-base font-medium tracking-wide"> 
+        <a href="/" class="hover:text-yellow-200 transition">Home</a>
+        <a href="/shop" class="hover:text-yellow-200 transition">Shop</a>
+        <a href="/contact" class="hover:text-yellow-200 transition">Our Store</a>
+        <a href="/about" class="hover:text-yellow-200 transition">About Us</a>
+    </nav>
+
+    <!-- RIGHT (Search Bar & Accounts) -->
+    <div class="flex items-center gap-6 text-sm font-medium">
+        <!-- Search Bar matching the image -->
+        <div class="hidden md:flex items-center bg-white rounded-full px-4 py-2 w-48 shadow-sm">
+            <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input type="text" class="bg-transparent border-none outline-none text-gray-800 w-full text-xs" placeholder="Search...">
+        </div>
+
+        <a href="/cart" class="hover:text-yellow-200 transition">CART</a>
+        <a href="/login" class="hover:text-yellow-200 transition">ACCOUNT</a>
+    </div>
+
+</header>

@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+
+<div class="p-10 max-w-3xl mx-auto">
+
+<h1 class="text-2xl mb-4">Invoice</h1>
+
+<p>Order ID: <%= order.id %></p>
+<p>Status: <%= order.status %></p>
+<p>Total: AED <%= order.total %></p>
+
+<h3 class="mt-6 mb-2">Items</h3>
+
+<% items.forEach(i => { %>
+<div>
+<%= i.product_name %> — Qty: <%= i.quantity %>
+</div>
+<% }) %>
+
+<button onclick="window.print()" class="mt-6 bg-white text-black px-6 py-2">
+Print Invoice
+</button>
+
+</div>
+
+<%- include('partials/footer') %>

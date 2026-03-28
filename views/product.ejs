@@ -1,0 +1,78 @@
+<%- include('partials/header') %>
+
+    <div class="max-w-6xl mx-auto px-6 md:px-20 py-16 grid md:grid-cols-2 gap-16">
+
+        <!-- IMAGE -->
+        <img src="/images/<%= product.image %>" class="w-full h-[500px] object-cover rounded-xl shadow">
+
+        <!-- INFO -->
+        <div>
+
+            <h1 class="text-3xl font-semibold mb-3">
+                <%= product.name %>
+            </h1>
+
+            <p class="text-xl mb-4 text-gray-700">₹ <%= product.price %>
+            </p>
+
+            <p class="text-gray-500 mb-6">
+                <%= product.description %>
+            </p>
+
+            <form action="/add-to-cart" method="POST" class="space-y-4">
+
+                <input type="hidden" name="id" value="<%= product.id %>">
+                <input type="hidden" name="name" value="<%= product.name %>">
+                <input type="hidden" name="price" value="<%= product.price %>">
+
+                <select name="size" class="w-full p-3 border rounded-lg">
+                    <% variants.forEach(v=> { %>
+                        <option>
+                            <%= v.size %>
+                        </option>
+                        <% }) %>
+                </select>
+
+                <button class="bg-black text-white w-full py-3 rounded-lg hover:opacity-80">
+                    Add to Cart
+                </button>
+
+            </form>
+
+            <a href="https://wa.me/91XXXXXXXXXX"
+                class="block mt-4 text-center border py-3 rounded-lg hover:bg-black hover:text-white transition">
+                Buy via WhatsApp
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- REVIEWS -->
+    <section class="max-w-4xl mx-auto px-6 md:px-20 pb-20">
+
+        <h2 class="text-2xl mb-6">Customer Reviews</h2>
+
+        <% reviews.forEach(r=> { %>
+            <div class="mb-4 border-b pb-3 text-gray-600">
+                ⭐ <%= r.rating %> — <%= r.comment %>
+            </div>
+            <% }) %>
+
+                <form action="/add-review" method="POST" class="mt-6 space-y-3">
+
+                    <input type="hidden" name="product_id" value="<%= product.id %>">
+
+                    <input name="rating" placeholder="Rating (1-5)" class="p-2 w-full border rounded">
+
+                    <input name="comment" placeholder="Write your review" class="p-2 w-full border rounded">
+
+                    <button class="bg-black text-white px-6 py-2 rounded">
+                        Submit
+                    </button>
+
+                </form>
+
+    </section>
+
+    <%- include('partials/footer') %>

@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+
+<div class="p-10">
+
+<h2 class="text-3xl mb-10">Shop</h2>
+
+<div class="grid md:grid-cols-4 gap-8">
+
+<% products.forEach(p => { %>
+
+<a href="/product/<%= p.id %>" class="group">
+
+<img src="/images/<%= p.image %>" 
+class="w-full h-[300px] object-cover mb-3 group-hover:opacity-80">
+
+<h3><%= p.name %></h3>
+<p class="text-gray-400">AED <%= p.price %></p>
+
+</a>
+
+<% }) %>
+
+</div>
+
+</div>
+
+<%- include('partials/footer') %>

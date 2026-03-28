@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+
+<div class="p-10 max-w-3xl mx-auto">
+
+<h1 class="text-2xl mb-6">Order #<%= order.id %></h1>
+
+<div class="mb-6">
+
+<div class="mb-2">Status: <%= order.status %></div>
+
+<div class="flex gap-4 text-sm">
+
+<span class="<%= order.status === 'Pending' ? 'text-green-400' : '' %>">Pending</span>
+<span class="<%= order.status === 'Shipped' ? 'text-green-400' : '' %>">Shipped</span>
+<span class="<%= order.status === 'Delivered' ? 'text-green-400' : '' %>">Delivered</span>
+
+</div>
+
+</div>
+
+<h3 class="mb-4">Items</h3>
+
+<% items.forEach(i => { %>
+<div class="border-b border-gray-800 py-2">
+<%= i.product_name %> | Qty: <%= i.quantity %> | Size: <%= i.size %>
+</div>
+<% }) %>
+
+</div>
+
+<%- include('partials/footer') %>
