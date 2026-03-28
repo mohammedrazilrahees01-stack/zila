@@ -1,27 +1,140 @@
 <%- include('partials/header') %>
 
-<div class="p-10">
+<section class="bg-[#fdf6ec] min-h-screen pt-32 pb-24 px-6 md:px-16 font-['Poppins']">
+  <div class="container mx-auto">
 
-<h2 class="text-3xl mb-10">Shop</h2>
+    <!-- Page Header -->
+    <div class="mb-12">
+      <span class="text-[#e09e2b] text-xs font-black uppercase tracking-widest block mb-2">Browse</span>
+      <h1 class="text-5xl md:text-6xl font-black text-gray-900 tracking-tighter">THE SHOP</h1>
+      <div class="w-20 h-1.5 bg-[#f8bc45] mt-4 rounded-full"></div>
+    </div>
 
-<div class="grid md:grid-cols-4 gap-8">
+    <!-- Filter & Sort Bar -->
+    <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-2xl p-4 md:p-6 mb-10 shadow-sm">
+      <form action="/shop" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
+        <!-- Search -->
+        <div class="flex-1">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Search</label>
+          <div class="flex items-center bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-[#e09e2b] transition">
+            <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" name="search" value="<%= search %>" class="bg-transparent outline-none w-full text-sm font-medium" placeholder="Search products...">
+          </div>
+        </div>
 
-<% products.forEach(p => { %>
+        <!-- Category -->
+        <div class="w-full md:w-48">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Category</label>
+          <select name="category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#e09e2b] transition text-sm font-medium">
+            <option value="">All Categories</option>
+            <option value="Topwear" <%= currentCategory === 'Topwear' ? 'selected' : '' %>>Topwear</option>
+            <option value="Bottomwear" <%= currentCategory === 'Bottomwear' ? 'selected' : '' %>>Bottomwear</option>
+            <% categories.forEach(cat => { if(cat.category !== 'Topwear' && cat.category !== 'Bottomwear') { %>
+              <option value="<%= cat.category %>" <%= currentCategory === cat.category ? 'selected' : '' %>><%= cat.category %></option>
+            <% } }) %>
+          </select>
+        </div>
 
-<a href="/product/<%= p.id %>" class="group">
+        <!-- Sort -->
+        <div class="w-full md:w-48">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Sort By</label>
+          <select name="sort" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#e09e2b] transition text-sm font-medium">
+            <option value="newest" <%= currentSort === 'newest' ? 'selected' : '' %>>Newest First</option>
+            <option value="price_asc" <%= currentSort === 'price_asc' ? 'selected' : '' %>>Price: Low to High</option>
+            <option value="price_desc" <%= currentSort === 'price_desc' ? 'selected' : '' %>>Price: High to Low</option>
+          </select>
+        </div>
 
-<img src="/images/<%= p.image %>" 
-class="w-full h-[300px] object-cover mb-3 group-hover:opacity-80">
+        <!-- Price Range -->
+        <div class="w-full md:w-56">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Price Range (₹)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" name="min" value="<%= min || '' %>" placeholder="Min" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 outline-none focus:border-[#e09e2b] transition text-sm">
+            <span class="text-gray-400 font-bold">—</span>
+            <input type="number" name="max" value="<%= max == 999999 ? '' : max %>" placeholder="Max" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 outline-none focus:border-[#e09e2b] transition text-sm">
+          </div>
+        </div>
 
-<h3><%= p.name %></h3>
-<p class="text-gray-400">AED <%= p.price %></p>
+        <!-- Buttons -->
+        <div class="flex gap-2 flex-shrink-0">
+          <button type="submit" class="glass-btn btn-shine text-white px-6 py-3 rounded-xl font-bold uppercase tracking-wide text-sm relative overflow-hidden">
+            Filter
+          </button>
+          <a href="/shop" class="bg-gray-100 text-gray-600 px-4 py-3 rounded-xl font-bold hover:bg-gray-200 transition text-sm">Reset</a>
+        </div>
+      </form>
+    </div>
 
-</a>
+    <!-- Active Filters Display -->
+    <% if(currentCategory || search || (min && min > 0) || (max && max < 999999)) { %>
+      <div class="flex flex-wrap gap-2 mb-8">
+        <span class="text-xs font-bold text-gray-500 uppercase tracking-wide py-2">Active filters:</span>
+        <% if(currentCategory) { %>
+          <span class="bg-[#f8bc45] text-black text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1">
+            <%= currentCategory %> <a href="/shop<%= search ? '?search='+search : '' %>" class="ml-1 hover:text-red-600">✕</a>
+          </span>
+        <% } %>
+        <% if(search) { %>
+          <span class="bg-gray-200 text-gray-700 text-xs font-bold px-3 py-1.5 rounded-full">"<%= search %>"</span>
+        <% } %>
+      </div>
+    <% } %>
 
-<% }) %>
+    <!-- Results count -->
+    <p class="text-gray-500 font-medium text-sm mb-8"><span class="font-black text-gray-900"><%= products.length %></span> products found</p>
 
-</div>
+    <!-- Product Grid -->
+    <% if(products.length > 0) { %>
+      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <% products.forEach(product => { %>
+          <a href="/product/<%= product.id %>" class="group block product-card">
+            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-2xl bg-white mb-4 shadow-sm group-hover:shadow-2xl transition-all duration-500">
+              <% if(product.offer_price && product.offer_price > 0 && product.offer_price < product.price) { %>
+                <div class="absolute top-3 left-3 z-10 flex flex-col gap-1">
+                  <span class="bg-[#f8bc45] text-black text-[9px] font-black px-2.5 py-1 rounded-full uppercase">Sale</span>
+                  <span class="bg-black text-white text-[9px] font-black px-2.5 py-1 rounded-full">
+                    -<%= Math.round((product.price - product.offer_price) / product.price * 100) %>%
+                  </span>
+                </div>
+              <% } else if(product.stock > 0 && product.stock <= 5) { %>
+                <span class="absolute top-3 left-3 bg-red-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full z-10 uppercase">Only <%= product.stock %> left</span>
+              <% } else if(product.stock === 0) { %>
+                <span class="absolute top-3 left-3 bg-gray-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full z-10">Out of Stock</span>
+              <% } %>
 
-</div>
+              <img src="/images/<%= product.image %>" alt="<%= product.name %>" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-in-out">
+              
+              <!-- Hover overlay -->
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-all duration-300 flex items-end justify-center pb-4">
+                <span class="bg-white/90 backdrop-blur-sm text-black font-bold text-xs px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 uppercase tracking-wide">
+                  View Details
+                </span>
+              </div>
+            </div>
+            <div class="px-1">
+              <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1"><%= product.category %></p>
+              <h3 class="text-base font-bold text-gray-900 mb-1 leading-tight group-hover:text-[#e09e2b] transition truncate"><%= product.name %></h3>
+              <div class="flex items-center gap-2">
+                <% if(product.offer_price && product.offer_price > 0 && product.offer_price < product.price) { %>
+                  <span class="text-black font-black text-base">₹<%= product.offer_price %></span>
+                  <span class="text-gray-400 text-sm line-through font-medium">₹<%= product.price %></span>
+                <% } else { %>
+                  <span class="text-black font-black text-base">₹<%= product.price %></span>
+                <% } %>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="text-center bg-white rounded-3xl p-16 shadow-sm border border-gray-100">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">🔍</div>
+        <h2 class="text-2xl font-black mb-3">No products found</h2>
+        <p class="text-gray-500 mb-8">Try adjusting your filters or search terms.</p>
+        <a href="/shop" class="inline-block bg-black text-white px-8 py-3 rounded-xl font-bold uppercase tracking-widest hover:bg-[#e09e2b] transition">Clear Filters</a>
+      </div>
+    <% } %>
+  </div>
+</section>
 
 <%- include('partials/footer') %>

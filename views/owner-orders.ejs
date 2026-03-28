@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — Zila Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>* { font-family: 'Poppins', sans-serif; }</style>
+  <% const currentPage = 'orders'; %>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+  <%- include('partials/owner-sidebar') %>
+
+  <div class="flex-1 md:ml-64">
+    <div class="md:p-8 p-4 pt-20 md:pt-8">
+
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h1 class="text-3xl font-black text-gray-900">Orders</h1>
+          <p class="text-gray-500 font-medium text-sm mt-1"><%= orders.length %> total orders</p>
+        </div>
+      </div>
+
+      <!-- Status Filters -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        <% ['All', 'Pending Verification', 'Approved', 'Shipped', 'Delivered', 'Cancelled'].forEach(s => { %>
+          <a href="/owner/orders<%= s === 'All' ? '' : '?status='+encodeURIComponent(s) %>"
+             class="px-4 py-2 rounded-xl font-bold text-xs transition-all <%= (currentStatus === s || (!currentStatus && s === 'All')) ? 'bg-gray-900 text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-400' %>">
+            <%= s %>
+          </a>
+        <% }) %>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Order</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Customer</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Amount</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Ref #</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Date</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Status</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <% if(orders && orders.length > 0) { %>
+                <% orders.forEach(order => { %>
+                  <% const statusColors = {
+                    'Pending Verification': 'bg-yellow-100 text-yellow-800',
+                    'Approved': 'bg-blue-100 text-blue-800',
+                    'Shipped': 'bg-purple-100 text-purple-800',
+                    'Delivered': 'bg-green-100 text-green-800',
+                    'Cancelled': 'bg-red-100 text-red-800'
+                  }; %>
+                  <tr class="hover:bg-gray-50 transition group">
+                    <td class="px-5 py-4">
+                      <a href="/owner/orders/<%= order.id %>" class="font-mono font-black text-gray-900 hover:text-[#e09e2b] transition">#<%= order.id %></a>
+                    </td>
+                    <td class="px-5 py-4">
+                      <p class="font-bold text-gray-900 text-sm"><%= order.shipping_name %></p>
+                      <p class="text-[10px] text-gray-400"><%= order.shipping_phone %></p>
+                    </td>
+                    <td class="px-5 py-4 font-black text-gray-900">₹<%= order.total %></td>
+                    <td class="px-5 py-4">
+                      <span class="font-mono text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-lg"><%= order.payment_ref %></span>
+                    </td>
+                    <td class="px-5 py-4 text-sm text-gray-500 font-medium"><%= new Date(order.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}) %></td>
+                    <td class="px-5 py-4">
+                      <span class="text-[10px] font-bold px-2.5 py-1.5 rounded-xl <%= statusColors[order.status] || 'bg-gray-100 text-gray-600' %>">
+                        <%= order.status %>
+                      </span>
+                    </td>
+                    <td class="px-5 py-4">
+                      <a href="/owner/orders/<%= order.id %>" class="inline-flex items-center gap-1 text-[#e09e2b] hover:text-black font-bold text-xs">
+                        View →
+                      </a>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr><td colspan="7" class="text-center py-16 text-gray-400">
+                  <p class="text-4xl mb-3">📋</p>
+                  <p class="font-bold">No orders <%= currentStatus && currentStatus !== 'All' ? 'with status "'+currentStatus+'"' : 'yet' %></p>
+                </td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

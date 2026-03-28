@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics — Zila Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>* { font-family: 'Poppins', sans-serif; }</style>
+  <% const currentPage = 'analytics'; %>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+  <%- include('partials/owner-sidebar') %>
+
+  <div class="flex-1 md:ml-64">
+    <div class="md:p-8 p-4 pt-20 md:pt-8">
+
+      <div class="mb-8">
+        <h1 class="text-3xl font-black text-gray-900">Analytics</h1>
+        <p class="text-gray-500 font-medium text-sm mt-1">Business insights and performance data</p>
+      </div>
+
+      <!-- Top Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+        <div class="bg-gradient-to-br from-[#f8bc45] to-[#e09e2b] p-6 rounded-2xl shadow-lg shadow-yellow-200/50 text-black">
+          <p class="text-3xl font-black">₹<%= stats.totalRevenue || 0 %></p>
+          <p class="text-sm font-bold opacity-70 mt-1">Total Revenue</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <p class="text-3xl font-black text-gray-900"><%= stats.totalOrders || 0 %></p>
+          <p class="text-sm font-medium text-gray-500 mt-1">Total Orders</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <p class="text-3xl font-black text-gray-900"><%= stats.totalCustomers || 0 %></p>
+          <p class="text-sm font-medium text-gray-500 mt-1">Customers</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <p class="text-3xl font-black text-gray-900">₹<%= stats.totalOrders > 0 ? Math.round(stats.totalRevenue / stats.totalOrders) : 0 %></p>
+          <p class="text-sm font-medium text-gray-500 mt-1">Avg. Order Value</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- Revenue Chart -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h2 class="font-black text-gray-900 mb-5">Revenue (Last 7 days)</h2>
+          <canvas id="revenueChart" height="220"></canvas>
+        </div>
+
+        <!-- Order Status Doughnut -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h2 class="font-black text-gray-900 mb-5">Order Status Distribution</h2>
+          <canvas id="statusChart" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- Top Products -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="p-6 border-b border-gray-100">
+            <h2 class="font-black text-gray-900">Top Products by Revenue</h2>
+          </div>
+          <div class="divide-y divide-gray-50">
+            <% if(topProducts && topProducts.length > 0) { %>
+              <% topProducts.forEach((p, idx) => { %>
+                <div class="flex items-center gap-4 p-5">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm
+                    <%= idx === 0 ? 'bg-[#f8bc45] text-black' : idx === 1 ? 'bg-gray-200 text-gray-700' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-500' %>">
+                    <%= idx + 1 %>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-bold text-gray-900 text-sm"><%= p.name %></p>
+                    <p class="text-[10px] text-gray-400"><%= p.order_count %> orders</p>
+                  </div>
+                  <p class="font-black text-gray-900 text-sm">₹<%= p.revenue %></p>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="py-10 text-center text-gray-400 text-sm font-medium">No data yet</div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Recent Activity Log -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="p-6 border-b border-gray-100">
+            <h2 class="font-black text-gray-900">Category Revenue Split</h2>
+          </div>
+          <div class="p-6 space-y-4">
+            <% if(categoryRevenue && categoryRevenue.length > 0) { %>
+              <% const total = categoryRevenue.reduce((s,c) => s + (c.revenue || 0), 0); %>
+              <% categoryRevenue.forEach((cat, idx) => { %>
+                <% const pct = total > 0 ? Math.round(cat.revenue / total * 100) : 0; %>
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="font-bold text-sm text-gray-900"><%= cat.category %></span>
+                    <span class="text-sm font-black text-gray-700">₹<%= cat.revenue %> (<%= pct %>%)</span>
+                  </div>
+                  <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-700"
+                      style="width: <%= pct %>%; background: <%= ['#f8bc45', '#fac5b5', '#333', '#888'][idx % 4] %>"></div>
+                  </div>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="py-6 text-center text-gray-400 text-sm font-medium">No data yet</div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueData = <%- JSON.stringify(revenueByDay || []) %>;
+    new Chart(revenueCtx, {
+      type: 'line',
+      data: {
+        labels: revenueData.map(d => d.day),
+        datasets: [{
+          label: 'Revenue (₹)',
+          data: revenueData.map(d => d.revenue),
+          borderColor: '#f8bc45',
+          backgroundColor: 'rgba(248,188,69,0.1)',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#f8bc45',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color: '#f1f5f9' }, ticks: { font: { weight: 'bold', size: 11 } } },
+          x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 11 } } }
+        }
+      }
+    });
+
+    // Status Doughnut
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const statusData = <%- JSON.stringify(statusBreakdown || []) %>;
+    new Chart(statusCtx, {
+      type: 'doughnut',
+      data: {
+        labels: statusData.map(s => s.status),
+        datasets: [{
+          data: statusData.map(s => s.count),
+          backgroundColor: ['#f8bc45', '#60a5fa', '#a78bfa', '#34d399', '#f87171'],
+          borderWidth: 0,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'right', labels: { font: { weight: 'bold', size: 11 }, padding: 15 } }
+        },
+        cutout: '65%'
+      }
+    });
+  </script>
+</body>
+</html>

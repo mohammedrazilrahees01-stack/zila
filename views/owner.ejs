@@ -1,41 +1,174 @@
-<%- include('partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="p-6">
+<head>
+    <title>Owner Dashboard | Zila</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f4f5;
+        }
+    </style>
+</head>
 
-<h2 class="text-2xl mb-6">Owner Dashboard</h2>
+<body class="flex h-screen overflow-hidden">
 
-<div class="grid grid-cols-2 gap-6 mb-6">
+    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
+        <div class="p-6">
+            <h2 class="text-2xl font-black text-[#f8bc45] tracking-tighter">ZILA ADMIN</h2>
+        </div>
+        <nav class="flex-1 px-4 space-y-2">
+            <button onclick="showTab('orders')"
+                class="w-full text-left py-3 px-4 rounded-xl hover:bg-white/10 font-bold">Orders</button>
+            <button onclick="showTab('products')"
+                class="w-full text-left py-3 px-4 rounded-xl hover:bg-white/10 font-bold">Products</button>
+            <button onclick="showTab('reviews')"
+                class="w-full text-left py-3 px-4 rounded-xl hover:bg-white/10 font-bold">Reviews</button>
+        </nav>
+        <div class="p-4 border-t border-gray-800"><a href="/logout"
+                class="block text-center py-2 text-sm text-gray-400 bg-gray-800 rounded-lg">Logout</a></div>
+    </aside>
 
-<div class="bg-gray-800 p-4">
-Total Orders: <%= orders.length %>
-</div>
+    <main class="flex-1 overflow-y-auto p-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-black text-gray-900">Dashboard Overview</h1>
+            <a href="/" target="_blank" class="text-sm font-bold bg-white px-4 py-2 rounded-lg shadow border">View Live
+                Site</a>
+        </div>
 
-<div class="bg-gray-800 p-4">
-Revenue: AED <%= orders.reduce((s,o)=>s+o.total,0) %>
-</div>
+        <!-- ORDERS TAB -->
+        <div id="tab-orders" class="tab-content block">
+            <h2 class="text-xl font-bold mb-4">Manage Orders</h2>
+            <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+                        <th class="p-4">ID</th>
+                        <th class="p-4">Customer</th>
+                        <th class="p-4">Total</th>
+                        <th class="p-4">Ref</th>
+                        <th class="p-4">Status</th>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach(order=> { %>
+                            <tr class="border-t">
+                                <td class="p-4 text-sm">#<%= order.id %>
+                                </td>
+                                <td class="p-4 font-bold">
+                                    <%= order.name %><br><span class="text-xs text-gray-500">
+                                            <%= order.phone %>
+                                        </span>
+                                </td>
+                                <td class="p-4 text-[#e09e2b] font-bold">₹<%= order.total %>
+                                </td>
+                                <td class="p-4 text-xs font-mono">
+                                    <%= order.payment_ref %>
+                                </td>
+                                <td class="p-4">
+                                    <form action="/owner/update-order" method="POST" class="flex gap-2">
+                                        <input type="hidden" name="orderId" value="<%= order.id %>">
+                                        <select name="status" class="text-xs border p-2 rounded">
+                                            <option value="Pending Verification"
+                                                <%=order.status==='Pending Verification' ?'selected':'' %>>Pending
+                                            </option>
+                                            <option value="Approved" <%=order.status==='Approved' ?'selected':'' %>
+                                                >Approved</option>
+                                            <option value="Shipped" <%=order.status==='Shipped' ?'selected':'' %>
+                                                >Shipped</option>
+                                        </select>
+                                        <button type="submit"
+                                            class="bg-black text-white px-3 py-1 text-xs rounded">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-</div>
+        <!-- PRODUCTS TAB -->
+        <div id="tab-products" class="tab-content hidden">
+            <!-- Add Product Form (MULTIPART for real images) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border mb-8">
+                <h2 class="text-xl font-bold mb-4">Add New Product</h2>
+                <form action="/add-product" method="POST" enctype="multipart/form-data" class="grid grid-cols-2 gap-4">
+                    <input type="text" name="name" placeholder="Product Name" class="border p-3 rounded col-span-2"
+                        required>
+                    <input type="number" name="price" placeholder="Original Price" class="border p-3 rounded" required>
+                    <input type="number" name="offer_price" placeholder="Discount Price (Optional)"
+                        class="border p-3 rounded">
+                    <select name="category" class="border p-3 rounded" required>
+                        <option value="Topwear">Topwear</option>
+                        <option value="Bottomwear">Bottomwear</option>
+                    </select>
+                    <input type="number" name="stock" placeholder="Stock Quantity" class="border p-3 rounded" required>
+                    <input type="text" name="sizes" placeholder="Sizes (S, M, L, XL)"
+                        class="border p-3 rounded col-span-2">
+                    <textarea name="description" placeholder="Description" class="border p-3 rounded col-span-2"
+                        required></textarea>
 
-<h3 class="text-xl mb-4">Orders</h3>
+                    <!-- REAL IMAGE UPLOAD -->
+                    <div class="col-span-2 border p-3 rounded bg-gray-50">
+                        <label class="block text-xs font-bold text-gray-500 mb-2">Upload Product Image</label>
+                        <input type="file" name="image" accept="image/*" required>
+                    </div>
 
-<% orders.forEach(o => { %>
-<div class="mb-3 border-b border-gray-800 pb-2">
+                    <button type="submit" class="bg-green-600 text-white font-bold p-3 rounded col-span-2">Publish
+                        Product</button>
+                </form>
+            </div>
 
-Order #<%= o.id %> — AED <%= o.total %> — <%= o.status %>
+            <div class="grid grid-cols-4 gap-4">
+                <% products.forEach(p=> { %>
+                    <div class="bg-white p-4 rounded-xl shadow-sm border relative">
+                        <form action="/delete-product/<%= p.id %>" method="POST" class="absolute top-2 right-2">
+                            <button class="bg-red-500 text-white w-6 h-6 rounded-full text-xs">X</button>
+                        </form>
+                        <img src="/images/<%= p.image %>" class="w-full h-32 object-cover rounded mb-2">
+                        <h3 class="font-bold text-sm truncate">
+                            <%= p.name %>
+                        </h3>
+                        <p class="text-xs text-gray-500">Stock: <%= p.stock %>
+                        </p>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
 
-<form action="/update-order/<%= o.id %>" method="POST" class="mt-2">
-<select name="status" class="text-black">
-<option>Pending</option>
-<option>Shipped</option>
-<option>Delivered</option>
-<option>Cancelled</option>
-</select>
-<button class="bg-green-500 px-2 py-1">Update</button>
-</form>
+        <!-- REVIEWS TAB -->
+        <div id="tab-reviews" class="tab-content hidden">
+            <h2 class="text-xl font-bold mb-4">Manage Reviews</h2>
+            <div class="grid gap-4">
+                <% reviews.forEach(r=> { %>
+                    <div class="bg-white p-4 rounded-xl shadow-sm border flex justify-between">
+                        <div>
+                            <p class="font-bold text-sm">
+                                <%= r.user %> <span class="text-yellow-500">
+                                        <%= '★' .repeat(r.rating) %>
+                                    </span>
+                            </p>
+                            <p class="text-gray-600 text-sm">
+                                <%= r.comment %>
+                            </p>
+                        </div>
+                        <form action="/owner/delete-review/<%= r.id %>" method="POST">
+                            <button class="text-red-500 text-xs font-bold underline">Delete</button>
+                        </form>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
 
-</div>
-<% }) %>
+    </main>
 
-</div>
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+        }
+    </script>
+</body>
 
-<%- include('partials/footer') %>
+</html>

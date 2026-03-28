@@ -1,13 +1,31 @@
 <%- include('partials/header') %>
 
-<div class="p-10 max-w-4xl mx-auto">
+<section class="bg-[#fdf6ec] min-h-screen pt-32 pb-24 px-6 font-['Poppins']">
+    <div class="container mx-auto max-w-4xl bg-white p-10 md:p-16 rounded-3xl shadow-sm border border-gray-100">
+        
+        <h1 class="text-4xl font-black text-gray-900 tracking-tighter mb-8 border-b border-gray-100 pb-6 uppercase">
+            Shipping Information
+        </h1>
 
-<h1 class="text-3xl mb-6">Shipping Policy</h1>
+        <div class="text-gray-600 leading-relaxed font-medium space-y-6 text-sm md:text-base">
+            
+            <h3 class="text-xl font-bold text-black mt-6 mb-2">Order Processing</h3>
+            <p>All orders are processed within 1 to 2 business days (excluding weekends and holidays) after receiving your order confirmation email. You will receive another notification when your order has shipped.</p>
 
-<p class="text-gray-400">
-We deliver across UAE within 2–5 business days. Orders are processed within 24 hours.
-</p>
+            <h3 class="text-xl font-bold text-black mt-6 mb-2">Domestic Shipping Rates</h3>
+            <p>We offer standard shipping across India. Shipping charges for your order will be calculated and displayed at checkout. </p>
+            <ul class="list-disc pl-6 space-y-2 mt-2">
+                <li><strong class="text-black">Standard Shipping:</strong> 3-5 Business Days</li>
+                <li><strong class="text-black">Express Shipping:</strong> 1-2 Business Days (Available in select pincodes)</li>
+                <li><strong class="text-green-600">Free Shipping:</strong> On all orders above ₹1,999.</li>
+            </ul>
 
-</div>
+            <h3 class="text-xl font-bold text-black mt-6 mb-2">How do I check the status of my order?</h3>
+            <p>When your order has shipped, you will receive an email notification from us which will include a tracking number you can use to check its status. Please allow 24 hours for the tracking information to become available.</p>
+
+        </div>
+
+    </div>
+</section>
 
 <%- include('partials/footer') %>

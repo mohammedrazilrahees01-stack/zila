@@ -1,55 +1,150 @@
 <%- include('partials/header') %>
 
-<div class="p-10">
+<section class="bg-[#fdf6ec] min-h-screen pt-32 pb-24 px-6 md:px-16 font-['Poppins']">
+  <div class="container mx-auto max-w-6xl">
 
-<h1 class="text-2xl mb-6">Your Cart</h1>
+    <div class="mb-10">
+      <h1 class="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter">YOUR CART</h1>
+      <% let totalItems = (cart || []).reduce((s, i) => s + i.qty, 0); %>
+      <p class="text-gray-500 mt-2 font-medium"><%= totalItems %> item<%= totalItems !== 1 ? 's' : '' %> in your cart</p>
+    </div>
 
-<% cart.forEach((item, index) => { %>
+    <% if(cart && cart.length > 0) { %>
+      <div class="flex flex-col lg:flex-row gap-10">
 
-<div class="mb-4 border-b border-gray-800 pb-3">
+        <!-- Cart Items -->
+        <div class="flex-1">
+          <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <% let cartTotal = 0; %>
+            <% cart.forEach((item, index) => { %>
+              <% cartTotal += item.price * item.qty; %>
+              <div class="flex items-center gap-5 p-6 <%= index !== cart.length - 1 ? 'border-b border-gray-100' : '' %> hover:bg-gray-50/50 transition group">
+                <!-- Image -->
+                <div class="w-20 h-28 md:w-24 md:h-32 flex-shrink-0 overflow-hidden rounded-xl bg-gray-50">
+                  <img src="/images/<%= item.image %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                </div>
 
-<p class="text-lg"><%= item.name %></p>
-<p class="text-gray-400">Size: <%= item.size %></p>
-<p>AED <%= item.price %></p>
+                <!-- Details -->
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-base font-bold text-gray-900 truncate"><%= item.name %></h3>
+                  <p class="text-xs text-gray-400 font-medium mt-0.5 mb-3">
+                    Size: <span class="font-bold text-gray-700 bg-gray-100 px-2 py-0.5 rounded-md"><%= item.size %></span>
+                  </p>
+                  <p class="text-[#e09e2b] font-black text-base">₹<%= item.price %></p>
+                </div>
 
-<form action="/remove-cart/<%= index %>" method="POST">
-<button class="text-red-500 text-sm">Remove</button>
-</form>
+                <!-- Qty + Remove -->
+                <div class="flex flex-col items-end gap-3 flex-shrink-0">
+                  <!-- Qty updater -->
+                  <form action="/cart/update/<%= index %>" method="POST" class="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
+                    <button type="submit" name="qty" value="<%= item.qty - 1 %>" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white font-bold text-gray-600 transition text-lg">−</button>
+                    <span class="font-black text-gray-900 w-6 text-center text-sm"><%= item.qty %></span>
+                    <button type="submit" name="qty" value="<%= item.qty + 1 %>" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white font-bold text-gray-600 transition text-lg">+</button>
+                  </form>
 
-</div>
+                  <!-- Line total -->
+                  <p class="font-black text-gray-900 text-sm">₹<%= item.price * item.qty %></p>
 
-<% }) %>
+                  <!-- Remove -->
+                  <form action="/remove-cart/<%= index %>" method="POST">
+                    <button type="submit" class="text-red-400 hover:text-red-600 transition text-xs font-bold flex items-center gap-1">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                      Remove
+                    </button>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          </div>
 
-<a href="/checkout" class="bg-white text-black px-6 py-3">Proceed to Checkout</a>
+          <!-- Continue shopping -->
+          <a href="/shop" class="inline-flex items-center gap-2 mt-6 text-sm font-bold text-gray-500 hover:text-black transition group">
+            <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Continue Shopping
+          </a>
+        </div>
 
-</div>
+        <!-- Order Summary -->
+        <div class="w-full lg:w-96">
+          <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 sticky top-32">
+            <h2 class="text-2xl font-black mb-6 pb-4 border-b border-gray-100">Order Summary</h2>
 
-<!-- UPSELL -->
-<div class="p-10">
+            <!-- Items -->
+            <div class="space-y-3 mb-6">
+              <% cart.forEach(item => { %>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-500 truncate max-w-[60%]"><%= item.name %> <span class="text-gray-400">×<%= item.qty %></span></span>
+                  <span class="font-bold text-gray-900">₹<%= item.price * item.qty %></span>
+                </div>
+              <% }) %>
+            </div>
 
-<h2 class="text-xl mb-4">You may also like</h2>
+            <div class="space-y-3 border-t border-gray-100 pt-4 mb-4">
+              <div class="flex justify-between text-gray-600">
+                <span class="font-medium">Subtotal</span>
+                <span class="font-bold text-black">₹<%= cartTotal %></span>
+              </div>
+              <div class="flex justify-between text-gray-600">
+                <span class="font-medium">Shipping</span>
+                <% if(cartTotal >= 1999) { %>
+                  <span class="font-bold text-green-500">Free 🎉</span>
+                <% } else { %>
+                  <span class="font-bold text-gray-900">₹99</span>
+                <% } %>
+              </div>
+              <% if(cartTotal < 1999) { %>
+                <p class="text-[11px] text-gray-400 bg-gray-50 p-2 rounded-lg">Add ₹<%= 1999 - cartTotal %> more for free shipping!</p>
+              <% } %>
+            </div>
 
-<div class="grid md:grid-cols-4 gap-6">
+            <div class="flex justify-between border-t-2 border-gray-900 pt-4 mb-8">
+              <span class="text-xl font-black">Total</span>
+              <span class="text-2xl font-black text-black">₹<%= cartTotal >= 1999 ? cartTotal : cartTotal + 99 %></span>
+            </div>
 
-<% upsell.forEach(p => { %>
+            <a href="/checkout" class="relative overflow-hidden block text-center w-full glass-btn btn-shine text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-xl text-sm mb-3">
+              Proceed to Checkout
+            </a>
+            <p class="text-center text-[11px] text-gray-400 flex items-center justify-center gap-1">
+              <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+              Secure & encrypted checkout
+            </p>
+          </div>
+        </div>
+      </div>
 
-<a href="/product/<%= p.id %>">
-<img src="/images/<%= p.image %>" class="w-full h-48 object-cover">
-<p><%= p.name %></p>
-</a>
+      <!-- Upsell -->
+      <% if(upsell && upsell.length > 0) { %>
+        <div class="mt-20">
+          <h3 class="text-2xl font-black mb-8">YOU MIGHT ALSO LIKE</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <% upsell.forEach(p => { %>
+              <a href="/product/<%= p.id %>" class="group block product-card">
+                <div class="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white shadow-sm group-hover:shadow-xl transition-all duration-500">
+                  <img src="/images/<%= p.image %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                </div>
+                <div class="mt-3">
+                  <h4 class="font-bold text-gray-900 text-sm truncate group-hover:text-[#e09e2b] transition"><%= p.name %></h4>
+                  <p class="text-[#e09e2b] font-black text-sm">₹<%= p.offer_price && p.offer_price > 0 ? p.offer_price : p.price %></p>
+                </div>
+              </a>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
 
-<% }) %>
-
-</div>
-
-</div>
-
-<script>
-fetch('/track-cart', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ cart: "active" })
-});
-</script>
+    <% } else { %>
+      <!-- Empty State -->
+      <div class="text-center bg-white rounded-3xl p-16 shadow-sm border border-gray-100 max-w-lg mx-auto mt-10">
+        <div class="w-24 h-24 bg-[#fdf6ec] rounded-full flex items-center justify-center mx-auto mb-6 text-4xl border-4 border-[#f8bc45]/30">🛍️</div>
+        <h2 class="text-2xl font-black mb-3 text-gray-900">Your cart is empty</h2>
+        <p class="text-gray-500 font-medium mb-8">Looks like you haven't added anything yet. Explore our collection!</p>
+        <a href="/shop" class="inline-block relative overflow-hidden glass-btn btn-shine text-white px-10 py-4 rounded-xl font-black uppercase tracking-widest shadow-xl">
+          Explore Shop
+        </a>
+      </div>
+    <% } %>
+  </div>
+</section>
 
 <%- include('partials/footer') %>

@@ -1,52 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zila Collections</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zila Collections | Premium Streetwear</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Poppins', sans-serif; background-color: #fdf6ec; color: #111; overflow-x: hidden; }
 
-<!-- Added Poppins Font for that premium bold look -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        background: #f8bc45; /* Yellow background to match image */
-        color: #111;
-        overflow-x: hidden;
+    /* ── PAGE LOADER ── */
+    #page-loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #fdf6ec;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
     }
-</style>
+    #page-loader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-logo { animation: loaderPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    @keyframes loaderPop {
+      0% { transform: scale(0.5) translateY(20px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .loader-bar {
+      width: 120px; height: 3px; background: #f0e0c0; border-radius: 99px; margin-top: 24px; overflow: hidden;
+    }
+    .loader-bar-fill {
+      height: 100%; width: 0; background: linear-gradient(90deg, #f8bc45, #e09e2b);
+      border-radius: 99px; animation: loadFill 1.3s ease forwards;
+    }
+    @keyframes loadFill { 0%{width:0} 100%{width:100%} }
+
+    /* ── GLASSMORPHIC PILL HEADER ── */
+    .glass-nav {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.8) inset;
+      transition: all 0.3s ease;
+    }
+    .glass-nav.scrolled {
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.14);
+    }
+
+    /* ── GLOBAL BUTTON ANIMATIONS ── */
+    .glass-btn {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(30,30,30,0.95));
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .glass-btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(248,188,69,0.3), rgba(224,158,43,0.1));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .glass-btn:hover::after { opacity: 1; }
+    .glass-btn:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 20px 40px rgba(224,158,43,0.3); }
+
+    /* Hover scale on ALL buttons and links that look like buttons */
+    .btn-hover, button:not(.no-scale):not(#mobile-menu-btn):not(#close-menu-btn),
+    a.btn, [class*="rounded-full"][class*="px-"][class*="py-"]:not(.no-scale) {
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease !important;
+    }
+    .btn-hover:hover { transform: scale(1.06) !important; }
+
+    .glass-card {
+      background: rgba(255,255,255,0.7); backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    /* ── NAV UNDERLINE EFFECT ── */
+    .nav-link { position: relative; }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px;
+      background: #e09e2b; transition: width 0.3s ease;
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    /* ── PRODUCT CARD ── */
+    .product-card { transition: all 0.4s cubic-bezier(0.4,0,0.2,1); }
+    .product-card:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(0,0,0,0.12); }
+
+    /* ── SHINE EFFECT ── */
+    @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+    .btn-shine::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+      transition: 0.5s;
+    }
+    .btn-shine:hover::before { animation: shimmer 0.6s; left: 100%; }
+
+    /* ── WHATSAPP PULSE ── */
+    @keyframes waPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(37,211,102,0.5), 0 8px 32px rgba(37,211,102,0.35); }
+      50% { box-shadow: 0 0 0 12px rgba(37,211,102,0), 0 8px 32px rgba(37,211,102,0.35); }
+    }
+    #wa-float { animation: waPulse 2.2s ease-in-out infinite; }
+    #wa-float:hover { animation: none; transform: scale(1.1) !important; box-shadow: 0 12px 40px rgba(37,211,102,0.5) !important; }
+
+    /* ── PAGE TRANSITION FADE ── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .page-content { animation: fadeInUp 0.5s ease forwards; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #fdf6ec; }
+    ::-webkit-scrollbar-thumb { background: #e09e2b; border-radius: 3px; }
+  </style>
 </head>
 <body>
 
-<!-- Header positioned absolutely so it floats over the hero section -->
-<header class="absolute w-full top-0 left-0 flex justify-between items-center px-8 md:px-16 py-6 z-50 text-white">
+<!-- ════ PAGE LOADER ════ -->
+<div id="page-loader">
+  <div class="loader-logo">
+    <img src="/images/zila.png" alt="Zila" style="height:56px;object-fit:contain;">
+    <p style="color:#e09e2b;font-weight:800;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin-top:8px;">Loading...</p>
+  </div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- ════ FLOATING PILL HEADER ════ -->
+<header id="main-header" class="fixed w-full top-0 left-0 z-50 pt-4 px-4 md:px-8 transition-all duration-300">
+  <div class="glass-nav rounded-full max-w-7xl mx-auto px-5 md:px-8 py-3 flex justify-between items-center">
+
+    <!-- Hamburger (mobile) -->
+    <button id="mobile-menu-btn" class="md:hidden text-gray-900 focus:outline-none p-1 rounded-full hover:bg-gray-100 transition no-scale">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
 
     <!-- LOGO -->
-    <a href="/" class="flex items-center gap-3">
-        <!-- Filter added to turn your dark logo white to match the aesthetic, remove style if your logo is already white -->
-        <img src="/images/zila.png" class="h-8 md:h-10" style="filter: brightness(0) invert(1);">
+    <a href="/" class="flex items-center gap-2 group">
+      <img src="/images/zila.png" alt="Zila" class="h-8 md:h-9 object-contain transition-transform group-hover:scale-105 duration-300">
     </a>
 
-    <!-- NAV (Centered like the image) -->
-    <nav class="hidden md:flex gap-10 text-base font-medium tracking-wide"> 
-        <a href="/" class="hover:text-yellow-200 transition">Home</a>
-        <a href="/shop" class="hover:text-yellow-200 transition">Shop</a>
-        <a href="/contact" class="hover:text-yellow-200 transition">Our Store</a>
-        <a href="/about" class="hover:text-yellow-200 transition">About Us</a>
+    <!-- DESKTOP NAV -->
+    <nav class="hidden md:flex items-center gap-7 text-sm font-bold tracking-wide text-gray-800 uppercase">
+      <a href="/" class="nav-link hover:text-[#e09e2b] transition-colors duration-200">Home</a>
+      <a href="/shop" class="nav-link hover:text-[#e09e2b] transition-colors duration-200">Shop</a>
+      <a href="/about" class="nav-link hover:text-[#e09e2b] transition-colors duration-200">About</a>
+      <a href="/contact" class="nav-link hover:text-[#e09e2b] transition-colors duration-200">Contact</a>
+      <!-- Search -->
+      <form action="/shop" method="GET" class="flex items-center bg-gray-100/80 rounded-full px-3 py-1.5 w-36 focus-within:ring-2 ring-[#e09e2b] transition ml-1">
+        <button type="submit" class="flex-shrink-0 no-scale">
+          <svg class="w-4 h-4 text-gray-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </button>
+        <input type="text" name="search" class="bg-transparent border-none outline-none w-full text-xs font-medium text-gray-700 placeholder-gray-400" placeholder="Search...">
+      </form>
     </nav>
 
-    <!-- RIGHT (Search Bar & Accounts) -->
-    <div class="flex items-center gap-6 text-sm font-medium">
-        <!-- Search Bar matching the image -->
-        <div class="hidden md:flex items-center bg-white rounded-full px-4 py-2 w-48 shadow-sm">
-            <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" class="bg-transparent border-none outline-none text-gray-800 w-full text-xs" placeholder="Search...">
+    <!-- RIGHT NAV -->
+    <div class="hidden md:flex items-center gap-4 text-sm font-bold text-gray-800 uppercase tracking-wide">
+      <% if(user) { %>
+        <!-- Wishlist -->
+        <a href="/wishlist" class="relative hover:text-[#e09e2b] transition group btn-hover" title="Wishlist">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+          </svg>
+        </a>
+        <!-- Account Dropdown -->
+        <div class="relative group">
+          <button class="flex items-center gap-2 hover:text-[#e09e2b] transition no-scale">
+            <div class="w-7 h-7 bg-[#f8bc45] rounded-full flex items-center justify-center text-black font-black text-xs shadow">
+              <%= (user.name || user.email || 'U').charAt(0).toUpperCase() %>
+            </div>
+            <span class="text-xs capitalize max-w-[70px] truncate"><%= user.name || 'Account' %></span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="absolute right-0 top-full mt-3 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
+            <a href="/account" class="flex items-center gap-3 px-4 py-3 hover:bg-amber-50 text-gray-700 font-medium text-xs transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              My Profile
+            </a>
+            <a href="/orders" class="flex items-center gap-3 px-4 py-3 hover:bg-amber-50 text-gray-700 font-medium text-xs transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              My Orders
+            </a>
+            <a href="/wishlist" class="flex items-center gap-3 px-4 py-3 hover:bg-amber-50 text-gray-700 font-medium text-xs transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+              Wishlist
+            </a>
+            <div class="border-t border-gray-100"></div>
+            <a href="/logout" class="flex items-center gap-3 px-4 py-3 hover:bg-red-50 text-red-500 font-bold text-xs transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+              Logout
+            </a>
+          </div>
         </div>
+      <% } else { %>
+        <a href="/login" class="nav-link hover:text-[#e09e2b] transition text-xs">Login</a>
+        <a href="/register" class="relative glass-btn btn-shine text-white px-5 py-2 rounded-full text-xs tracking-widest shadow-lg">Sign Up</a>
+      <% } %>
 
-        <a href="/cart" class="hover:text-yellow-200 transition">CART</a>
-        <a href="/login" class="hover:text-yellow-200 transition">ACCOUNT</a>
+      <!-- Cart -->
+      <a href="/cart" class="relative hover:text-[#e09e2b] transition group pl-4 border-l-2 border-gray-200 flex items-center gap-2 btn-hover">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <span class="bg-[#f8bc45] text-black w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-black shadow-sm"><%= cartCount || 0 %></span>
+      </a>
     </div>
 
+    <!-- Mobile: Cart Icon only (right of hamburger is logo, right side is cart) -->
+    <a href="/cart" class="md:hidden relative flex items-center gap-1 text-gray-900 btn-hover">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+      </svg>
+      <span class="bg-[#f8bc45] text-black w-4 h-4 flex items-center justify-center rounded-full text-[9px] font-black"><%= cartCount || 0 %></span>
+    </a>
+  </div>
 </header>
+
+<!-- ════ MOBILE SLIDE MENU ════ -->
+<div id="mobile-menu" class="fixed inset-0 bg-white/95 backdrop-blur-xl z-[60] transform -translate-x-full transition-transform duration-300 flex flex-col p-8">
+  <div class="flex justify-between items-center mb-8">
+    <a href="/"><img src="/images/zila.png" alt="Zila" class="h-8 object-contain"></a>
+    <button id="close-menu-btn" class="text-gray-900 p-2 rounded-xl hover:bg-gray-100 transition no-scale">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <form action="/shop" method="GET" class="flex items-center bg-gray-100 rounded-2xl px-4 py-3 mb-8">
+    <svg class="w-5 h-5 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    <input type="text" name="search" class="bg-transparent border-none outline-none w-full font-medium text-gray-800 placeholder-gray-400" placeholder="Search products...">
+  </form>
+
+  <nav class="flex flex-col gap-2 text-xl font-black uppercase tracking-tight flex-1">
+    <a href="/" class="flex items-center justify-between py-4 border-b border-gray-100 hover:text-[#e09e2b] transition group">
+      Home <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </a>
+    <a href="/shop" class="flex items-center justify-between py-4 border-b border-gray-100 hover:text-[#e09e2b] transition group">
+      Shop <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </a>
+    <a href="/cart" class="flex items-center justify-between py-4 border-b border-gray-100 hover:text-[#e09e2b] transition group">
+      Cart (<%= cartCount || 0 %>) <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </a>
+    <% if(user) { %>
+      <a href="/account" class="flex items-center justify-between py-4 border-b border-gray-100 hover:text-[#e09e2b] transition group">
+        My Account <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a href="/orders" class="flex items-center justify-between py-4 border-b border-gray-100 hover:text-[#e09e2b] transition group">
+        My Orders <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a href="/wishlist" class="flex items-center justify-between py-4 border-b border-gray-100 hover:text-[#e09e2b] transition group">
+        Wishlist <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a href="/logout" class="py-4 text-red-500 font-bold mt-4">Logout</a>
+    <% } else { %>
+      <a href="/login" class="flex items-center justify-between py-4 border-b border-gray-100 hover:text-[#e09e2b] transition">Login</a>
+      <a href="/register" class="mt-4 glass-btn text-white text-center py-4 rounded-2xl tracking-widest text-base">Create Account</a>
+    <% } %>
+  </nav>
+</div>
+
+<script>
+  // ── Page Loader ──
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('page-loader').classList.add('hide');
+    }, 1500);
+  });
+
+  // ── Mobile Menu ──
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const closeMenuBtn = document.getElementById('close-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  mobileMenuBtn.addEventListener('click', () => { mobileMenu.classList.remove('-translate-x-full'); });
+  closeMenuBtn.addEventListener('click', () => { mobileMenu.classList.add('-translate-x-full'); });
+
+  // ── Header scroll glass effect ──
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('.glass-nav');
+    if (window.scrollY > 30) { nav.classList.add('scrolled'); }
+    else { nav.classList.remove('scrolled'); }
+  });
+
+  // ── Global button hover scale (applied to all .btn-hover + standard buttons) ──
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('button:not(.no-scale), a[class*="rounded"][class*="px-"], a[class*="btn"], .btn-hover').forEach(el => {
+      if (!el.classList.contains('no-scale')) {
+        el.style.transition = 'transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease';
+        el.addEventListener('mouseenter', () => { if (!el.style.transform || el.style.transform === 'none') el.style.transform = 'scale(1.06)'; });
+        el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+      }
+    });
+  });
+</script>

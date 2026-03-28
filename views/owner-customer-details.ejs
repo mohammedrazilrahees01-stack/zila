@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Profile — Zila Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>* { font-family: 'Poppins', sans-serif; }</style>
+  <% const currentPage = 'customers'; %>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+  <%- include('partials/owner-sidebar') %>
+
+  <div class="flex-1 md:ml-64">
+    <div class="md:p-8 p-4 pt-20 md:pt-8 max-w-5xl">
+
+      <div class="flex items-center gap-4 mb-8">
+        <a href="/owner/customers" class="text-gray-400 hover:text-black transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </a>
+        <h1 class="text-3xl font-black text-gray-900">Customer Profile</h1>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <!-- Profile Card -->
+        <div class="space-y-5">
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+            <div class="w-20 h-20 bg-[#f8bc45] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-black text-black">
+              <%= (customer.name || customer.email || 'U').charAt(0).toUpperCase() %>
+            </div>
+            <h2 class="text-xl font-black text-gray-900"><%= customer.name || 'No Name' %></h2>
+            <p class="text-gray-500 text-sm font-medium"><%= customer.email %></p>
+            <p class="text-gray-400 text-sm font-medium mt-1"><%= customer.phone || 'No phone' %></p>
+            <div class="border-t border-gray-100 mt-4 pt-4 flex justify-around">
+              <div class="text-center">
+                <p class="text-2xl font-black text-gray-900"><%= customerOrders.length %></p>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wide">Orders</p>
+              </div>
+              <div class="text-center">
+                <p class="text-2xl font-black text-[#e09e2b]">₹<%= customerOrders.reduce((s,o) => s + o.total, 0) %></p>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wide">Spent</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h3 class="font-black text-gray-900 mb-3">Address</h3>
+            <% if(customer.address) { %>
+              <div class="text-sm text-gray-600 space-y-1 font-medium">
+                <p><%= customer.address %></p>
+                <% if(customer.city) { %><p><%= customer.city %><% if(customer.pincode) { %>, <%= customer.pincode %><% } %></p><% } %>
+              </div>
+            <% } else { %>
+              <p class="text-gray-400 text-sm font-medium">No address saved</p>
+            <% } %>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <h3 class="font-black text-gray-900 mb-3 text-sm">Account Info</h3>
+            <div class="space-y-2 text-xs font-medium text-gray-500">
+              <div class="flex justify-between">
+                <span>Joined</span>
+                <span class="font-bold text-gray-700"><%= customer.created_at ? new Date(customer.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}) : '—' %></span>
+              </div>
+              <div class="flex justify-between">
+                <span>Wishlist Items</span>
+                <span class="font-bold text-gray-700"><%= wishlistCount || 0 %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders History -->
+        <div class="md:col-span-2">
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100">
+              <h2 class="font-black text-gray-900 text-lg">Order History</h2>
+            </div>
+            <% if(customerOrders && customerOrders.length > 0) { %>
+              <div class="divide-y divide-gray-50">
+                <% customerOrders.forEach(order => { %>
+                  <% const statusColors = {
+                    'Pending Verification': 'bg-yellow-100 text-yellow-700',
+                    'Approved': 'bg-blue-100 text-blue-700',
+                    'Shipped': 'bg-purple-100 text-purple-700',
+                    'Delivered': 'bg-green-100 text-green-700',
+                    'Cancelled': 'bg-red-100 text-red-600'
+                  }; %>
+                  <div class="p-5 hover:bg-gray-50 transition">
+                    <div class="flex justify-between items-start mb-3">
+                      <div>
+                        <a href="/owner/orders/<%= order.id %>" class="font-black text-gray-900 hover:text-[#e09e2b] transition">#<%= order.id %></a>
+                        <p class="text-xs text-gray-400 font-medium mt-0.5"><%= new Date(order.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) %></p>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <span class="font-black text-gray-900">₹<%= order.total %></span>
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-full <%= statusColors[order.status] || 'bg-gray-100 text-gray-600' %>"><%= order.status %></span>
+                      </div>
+                    </div>
+                    <p class="text-xs text-gray-400 font-mono">Ref: <%= order.payment_ref %></p>
+                  </div>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <div class="py-12 text-center text-gray-400">
+                <p class="text-4xl mb-3">📦</p>
+                <p class="font-bold">No orders from this customer</p>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

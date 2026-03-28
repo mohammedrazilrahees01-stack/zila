@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customers — Zila Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>* { font-family: 'Poppins', sans-serif; }</style>
+  <% const currentPage = 'customers'; %>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+  <%- include('partials/owner-sidebar') %>
+
+  <div class="flex-1 md:ml-64">
+    <div class="md:p-8 p-4 pt-20 md:pt-8">
+
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h1 class="text-3xl font-black text-gray-900">Customers</h1>
+          <p class="text-gray-500 font-medium text-sm mt-1"><%= customers.length %> registered customers</p>
+        </div>
+        <form action="/owner/customers" method="GET" class="flex gap-2">
+          <input type="text" name="search" value="<%= search || '' %>" placeholder="Search by name or email..."
+            class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-[#f8bc45] font-medium bg-white w-64">
+          <button type="submit" class="bg-gray-900 text-white px-4 py-2.5 rounded-xl font-bold text-sm hover:bg-[#e09e2b] transition">Search</button>
+        </form>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Customer</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Phone</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Orders</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Total Spent</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Joined</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <% if(customers && customers.length > 0) { %>
+                <% customers.forEach(c => { %>
+                  <tr class="hover:bg-gray-50 transition group">
+                    <td class="px-5 py-4">
+                      <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-[#f8bc45] rounded-full flex items-center justify-center font-black text-black text-sm flex-shrink-0">
+                          <%= (c.name || c.email || 'U').charAt(0).toUpperCase() %>
+                        </div>
+                        <div>
+                          <p class="font-bold text-gray-900 text-sm"><%= c.name || 'No Name' %></p>
+                          <p class="text-[10px] text-gray-400"><%= c.email %></p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-5 py-4 text-sm text-gray-600 font-medium"><%= c.phone || '—' %></td>
+                    <td class="px-5 py-4">
+                      <span class="font-black text-gray-900 bg-gray-100 px-2.5 py-1 rounded-full text-sm"><%= c.order_count || 0 %></span>
+                    </td>
+                    <td class="px-5 py-4 font-black text-gray-900 text-sm">₹<%= c.total_spent || 0 %></td>
+                    <td class="px-5 py-4 text-sm text-gray-500 font-medium">
+                      <%= c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}) : '—' %>
+                    </td>
+                    <td class="px-5 py-4">
+                      <a href="/owner/customers/<%= c.id %>" class="inline-flex items-center gap-1 text-[#e09e2b] hover:text-black font-bold text-xs transition">
+                        View Profile →
+                      </a>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr><td colspan="6" class="text-center py-16 text-gray-400">
+                  <p class="text-4xl mb-3">👥</p>
+                  <p class="font-bold">No customers found</p>
+                </td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Product — Zila Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>* { font-family: 'Poppins', sans-serif; } .input-field:focus { border-color: #f8bc45; outline:none; }</style>
+  <% const currentPage = 'products'; %>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+  <%- include('partials/owner-sidebar') %>
+
+  <div class="flex-1 md:ml-64">
+    <div class="md:p-8 p-4 pt-20 md:pt-8 max-w-3xl">
+
+      <div class="flex items-center gap-4 mb-8">
+        <a href="/owner/products" class="text-gray-400 hover:text-black transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </a>
+        <div>
+          <h1 class="text-3xl font-black text-gray-900">Edit Product</h1>
+          <p class="text-gray-500 font-medium text-sm mt-0.5"><%= product.name %></p>
+        </div>
+      </div>
+
+      <% if(locals.error) { %>
+        <div class="bg-red-50 border border-red-200 text-red-600 font-bold p-4 rounded-xl mb-6"><%= error %></div>
+      <% } %>
+
+      <form action="/owner/products/edit/<%= product.id %>" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 class="font-black text-gray-900 mb-5 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-[#f8bc45] rounded-lg flex items-center justify-center text-black font-black text-xs">1</span>
+            Basic Information
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Product Name *</label>
+              <input type="text" name="name" value="<%= product.name %>" required
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Description *</label>
+              <textarea name="description" rows="3" required
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition resize-none"><%= product.description %></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Category *</label>
+              <select name="category" required class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+                <option value="Topwear" <%= product.category === 'Topwear' ? 'selected' : '' %>>Topwear</option>
+                <option value="Bottomwear" <%= product.category === 'Bottomwear' ? 'selected' : '' %>>Bottomwear</option>
+                <option value="Accessories" <%= product.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+                <option value="Footwear" <%= product.category === 'Footwear' ? 'selected' : '' %>>Footwear</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 class="font-black text-gray-900 mb-5 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-[#f8bc45] rounded-lg flex items-center justify-center text-black font-black text-xs">2</span>
+            Pricing & Stock
+          </h2>
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">MRP Price (₹) *</label>
+              <input type="number" name="price" value="<%= product.price %>" required min="0"
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Sale Price (₹)</label>
+              <input type="number" name="offer_price" value="<%= product.offer_price || 0 %>" min="0"
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Total Stock *</label>
+              <input type="number" name="stock" value="<%= product.stock %>" required min="0"
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 class="font-black text-gray-900 mb-5 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-[#f8bc45] rounded-lg flex items-center justify-center text-black font-black text-xs">3</span>
+            Sizes & Variants
+          </h2>
+          <div id="variants-container" class="space-y-3">
+            <% if(variants && variants.length > 0) { %>
+              <% variants.forEach(v => { %>
+                <div class="variant-row flex gap-3 items-center">
+                  <input type="text" name="size[]" value="<%= v.size %>" class="input-field flex-1 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition">
+                  <input type="number" name="variant_stock[]" value="<%= v.stock %>" min="0" class="input-field w-28 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition">
+                  <button type="button" onclick="removeVariant(this)" class="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="variant-row flex gap-3 items-center">
+                <input type="text" name="size[]" placeholder="S, M, L, XL, etc." class="input-field flex-1 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition">
+                <input type="number" name="variant_stock[]" placeholder="Stock" min="0" class="input-field w-28 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition">
+                <button type="button" onclick="removeVariant(this)" class="text-red-400 p-2 rounded-lg">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
+            <% } %>
+          </div>
+          <button type="button" onclick="addVariant()" class="mt-4 flex items-center gap-2 text-[#e09e2b] font-bold text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Size
+          </button>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 class="font-black text-gray-900 mb-5 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-[#f8bc45] rounded-lg flex items-center justify-center text-black font-black text-xs">4</span>
+            Product Image
+          </h2>
+          <div class="flex items-center gap-6">
+            <div class="w-24 h-32 overflow-hidden rounded-xl bg-gray-100 flex-shrink-0">
+              <img src="/images/<%= product.image %>" class="w-full h-full object-cover" id="current-img">
+            </div>
+            <div class="flex-1">
+              <label class="block w-full border-2 border-dashed border-gray-300 hover:border-[#f8bc45] rounded-xl p-6 text-center cursor-pointer transition">
+                <p class="font-bold text-gray-600 text-sm mb-1">Upload new image</p>
+                <p class="text-xs text-gray-400">Leave empty to keep current image</p>
+                <input type="file" name="image" accept="image/*" class="sr-only" onchange="previewImage(this)">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-black text-gray-900">Feature this product</h3>
+              <p class="text-sm text-gray-500 font-medium">Show on homepage</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" name="featured" value="1" class="sr-only peer" <%= product.featured ? 'checked' : '' %>>
+              <div class="w-12 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f8bc45]"></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <button type="submit" class="flex-1 bg-[#f8bc45] hover:bg-[#e09e2b] text-black font-black uppercase tracking-widest py-4 rounded-xl shadow-lg text-sm transition-all">
+            Save Changes
+          </button>
+          <a href="/owner/products" class="bg-gray-200 text-gray-700 hover:bg-gray-300 font-bold uppercase tracking-widest py-4 px-6 rounded-xl text-sm transition">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    function addVariant() {
+      const container = document.getElementById('variants-container');
+      const row = document.createElement('div');
+      row.className = 'variant-row flex gap-3 items-center';
+      row.innerHTML = `<input type="text" name="size[]" placeholder="Size" class="input-field flex-1 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition"><input type="number" name="variant_stock[]" placeholder="Stock" min="0" class="input-field w-28 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition"><button type="button" onclick="removeVariant(this)" class="text-red-400 p-2 rounded-lg hover:bg-red-50 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>`;
+      container.appendChild(row);
+    }
+    function removeVariant(btn) {
+      const rows = document.querySelectorAll('.variant-row');
+      if(rows.length > 1) btn.parentElement.remove();
+    }
+    function previewImage(input) {
+      const file = input.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = e => { document.getElementById('current-img').src = e.target.result; };
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,26 +1,68 @@
 <%- include('partials/header') %>
 
-<div class="p-10">
+<section class="bg-[#fdf6ec] min-h-screen pt-32 pb-24 px-6 md:px-16 font-['Poppins']">
+  <div class="container mx-auto max-w-5xl">
 
-<h1 class="text-2xl mb-6">Wishlist</h1>
+    <div class="mb-12">
+      <span class="text-[#e09e2b] text-xs font-black uppercase tracking-widest block mb-1">My Account</span>
+      <h1 class="text-5xl font-black text-gray-900 tracking-tighter">Wishlist</h1>
+      <p class="text-gray-500 mt-2 font-medium"><%= (wishlist || []).length %> saved items</p>
+    </div>
 
-<% items.forEach(p => { %>
+    <% if(wishlist && wishlist.length > 0) { %>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <% wishlist.forEach(p => { %>
+          <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-gray-200 transition-all duration-300">
+            <!-- Image -->
+            <a href="/product/<%= p.id %>" class="block relative aspect-[4/5] overflow-hidden bg-gray-50">
+              <img src="/images/<%= p.image %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+              <% if(p.offer_price && p.offer_price > 0 && p.offer_price < p.price) { %>
+                <span class="absolute top-3 left-3 bg-[#f8bc45] text-black text-[9px] font-black px-2.5 py-1 rounded-full uppercase">Sale</span>
+              <% } %>
+              <!-- Remove btn -->
+              <form action="/remove-wishlist/<%= p.id %>" method="POST" class="absolute top-3 right-3">
+                <button type="submit" class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-white shadow-sm transition">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                </button>
+              </form>
+            </a>
 
-<div class="mb-4">
-
-<img src="/images/<%= p.image %>" class="w-40 mb-2">
-
-<h3><%= p.name %></h3>
-<p>AED <%= p.price %></p>
-
-<form action="/remove-wishlist/<%= p.id %>" method="POST">
-<button class="text-red-500">Remove</button>
-</form>
-
-</div>
-
-<% }) %>
-
-</div>
+            <!-- Info -->
+            <div class="p-4">
+              <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1"><%= p.category %></p>
+              <a href="/product/<%= p.id %>" class="block">
+                <h3 class="font-bold text-gray-900 text-sm leading-tight group-hover:text-[#e09e2b] transition truncate"><%= p.name %></h3>
+              </a>
+              <div class="flex items-center gap-2 my-2">
+                <% if(p.offer_price && p.offer_price > 0 && p.offer_price < p.price) { %>
+                  <span class="font-black text-base text-gray-900">₹<%= p.offer_price %></span>
+                  <span class="text-sm text-gray-400 line-through">₹<%= p.price %></span>
+                <% } else { %>
+                  <span class="font-black text-base text-gray-900">₹<%= p.price %></span>
+                <% } %>
+              </div>
+              <form action="/cart" method="POST">
+                <input type="hidden" name="productId" value="<%= p.id %>">
+                <input type="hidden" name="size" value="M">
+                <button type="submit" class="w-full relative overflow-hidden glass-btn btn-shine text-white py-2.5 rounded-xl font-bold uppercase tracking-wide text-xs">
+                  Add to Cart
+                </button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="text-center bg-white rounded-3xl p-16 shadow-sm border border-gray-100">
+        <div class="w-24 h-24 bg-[#fdf6ec] rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">❤️</div>
+        <h2 class="text-2xl font-black mb-3 text-gray-900">Your wishlist is empty</h2>
+        <p class="text-gray-500 font-medium mb-8">Save items you love and come back to them later.</p>
+        <a href="/shop" class="inline-block relative overflow-hidden glass-btn btn-shine text-white px-10 py-4 rounded-xl font-black uppercase tracking-widest shadow-xl text-sm">
+          Explore Shop
+        </a>
+      </div>
+    <% } %>
+  </div>
+</section>
 
 <%- include('partials/footer') %>

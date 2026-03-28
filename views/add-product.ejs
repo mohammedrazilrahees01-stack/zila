@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Product — Zila Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>* { font-family: 'Poppins', sans-serif; } .input-field:focus { border-color: #f8bc45; outline:none; }</style>
+  <% const currentPage = 'products'; %>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+  <%- include('partials/owner-sidebar') %>
+
+  <div class="flex-1 md:ml-64">
+    <div class="md:p-8 p-4 pt-20 md:pt-8 max-w-3xl">
+
+      <!-- Header -->
+      <div class="flex items-center gap-4 mb-8">
+        <a href="/owner/products" class="text-gray-400 hover:text-black transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </a>
+        <div>
+          <h1 class="text-3xl font-black text-gray-900">Add New Product</h1>
+          <p class="text-gray-500 font-medium text-sm mt-0.5">Fill in the details to list a new product</p>
+        </div>
+      </div>
+
+      <% if(locals.error) { %>
+        <div class="bg-red-50 border border-red-200 text-red-600 font-bold p-4 rounded-xl mb-6"><%= error %></div>
+      <% } %>
+
+      <form action="/add-product" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+        <!-- Basic Info -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 class="font-black text-gray-900 mb-5 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-[#f8bc45] rounded-lg flex items-center justify-center text-black font-black text-xs">1</span>
+            Basic Information
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Product Name *</label>
+              <input type="text" name="name" placeholder="e.g. Oversized Streetwear Tee" required
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Description *</label>
+              <textarea name="description" rows="3" placeholder="Describe the product, material, fit, etc." required
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition resize-none"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Category *</label>
+              <select name="category" required class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+                <option value="">Select Category</option>
+                <option value="Topwear">Topwear</option>
+                <option value="Bottomwear">Bottomwear</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Footwear">Footwear</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 class="font-black text-gray-900 mb-5 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-[#f8bc45] rounded-lg flex items-center justify-center text-black font-black text-xs">2</span>
+            Pricing & Stock
+          </h2>
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">MRP Price (₹) *</label>
+              <input type="number" name="price" placeholder="999" required min="0"
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Sale Price (₹)</label>
+              <input type="number" name="offer_price" placeholder="799" min="0"
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+              <p class="text-[10px] text-gray-400 mt-1">Leave 0 for no discount</p>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Total Stock *</label>
+              <input type="number" name="stock" placeholder="100" required min="0"
+                class="input-field w-full border-2 border-gray-200 bg-gray-50 p-3.5 rounded-xl font-medium text-sm transition">
+            </div>
+          </div>
+        </div>
+
+        <!-- Variants -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 class="font-black text-gray-900 mb-5 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-[#f8bc45] rounded-lg flex items-center justify-center text-black font-black text-xs">3</span>
+            Sizes & Variants
+          </h2>
+          <p class="text-sm text-gray-500 mb-4 font-medium">Add size options available for this product.</p>
+          <div id="variants-container" class="space-y-3">
+            <div class="variant-row flex gap-3 items-center">
+              <input type="text" name="size[]" placeholder="S, M, L, XL, etc." class="input-field flex-1 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition">
+              <input type="number" name="variant_stock[]" placeholder="Stock" min="0" class="input-field w-28 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition">
+              <button type="button" onclick="removeVariant(this)" class="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="button" onclick="addVariant()" class="mt-4 flex items-center gap-2 text-[#e09e2b] font-bold text-sm hover:text-black transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Size Option
+          </button>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 class="font-black text-gray-900 mb-5 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-[#f8bc45] rounded-lg flex items-center justify-center text-black font-black text-xs">4</span>
+            Product Image
+          </h2>
+          <label class="block w-full border-2 border-dashed border-gray-300 hover:border-[#f8bc45] rounded-2xl p-8 text-center cursor-pointer transition group" id="image-label">
+            <div id="image-preview-container" class="hidden">
+              <img id="image-preview" class="max-h-40 mx-auto rounded-xl mb-3 object-cover">
+            </div>
+            <div id="upload-placeholder">
+              <svg class="w-10 h-10 text-gray-300 mx-auto mb-3 group-hover:text-[#e09e2b] transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <p class="font-bold text-gray-700">Click to upload product image</p>
+              <p class="text-xs text-gray-400 mt-1">PNG, JPG, WEBP — max 5MB</p>
+            </div>
+            <input type="file" name="image" accept="image/*" required class="sr-only" onchange="previewImage(this)">
+          </label>
+        </div>
+
+        <!-- Featured Toggle -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-black text-gray-900">Feature this product</h3>
+              <p class="text-sm text-gray-500 font-medium">Show on homepage featured section</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" name="featured" value="1" class="sr-only peer">
+              <div class="w-12 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f8bc45]"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="flex gap-4">
+          <button type="submit" class="flex-1 bg-[#f8bc45] hover:bg-[#e09e2b] text-black font-black uppercase tracking-widest py-4 rounded-xl shadow-lg text-sm transition-all">
+            Publish Product
+          </button>
+          <a href="/owner/products" class="bg-gray-200 text-gray-700 hover:bg-gray-300 font-bold uppercase tracking-widest py-4 px-6 rounded-xl text-sm transition">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function addVariant() {
+      const container = document.getElementById('variants-container');
+      const row = document.createElement('div');
+      row.className = 'variant-row flex gap-3 items-center';
+      row.innerHTML = `
+        <input type="text" name="size[]" placeholder="S, M, L, XL, etc." class="input-field flex-1 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition">
+        <input type="number" name="variant_stock[]" placeholder="Stock" min="0" class="input-field w-28 border-2 border-gray-200 bg-gray-50 p-3 rounded-xl font-medium text-sm transition">
+        <button type="button" onclick="removeVariant(this)" class="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      `;
+      container.appendChild(row);
+    }
+    function removeVariant(btn) {
+      const rows = document.querySelectorAll('.variant-row');
+      if(rows.length > 1) btn.parentElement.remove();
+    }
+    function previewImage(input) {
+      const file = input.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('image-preview').src = e.target.result;
+          document.getElementById('image-preview-container').classList.remove('hidden');
+          document.getElementById('upload-placeholder').classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+</body>
+</html>

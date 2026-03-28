@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reviews — Zila Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>* { font-family: 'Poppins', sans-serif; }</style>
+  <% const currentPage = 'reviews'; %>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+  <%- include('partials/owner-sidebar') %>
+
+  <div class="flex-1 md:ml-64">
+    <div class="md:p-8 p-4 pt-20 md:pt-8">
+
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h1 class="text-3xl font-black text-gray-900">Reviews</h1>
+          <p class="text-gray-500 font-medium text-sm mt-1"><%= reviews.length %> total reviews</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-5 mb-8">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+          <p class="text-3xl font-black text-gray-900"><%= reviews.length %></p>
+          <p class="text-gray-500 text-sm font-medium mt-1">Total Reviews</p>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+          <p class="text-3xl font-black text-[#f8bc45]"><%= reviews.length > 0 ? (reviews.reduce((s,r) => s + r.rating, 0) / reviews.length).toFixed(1) : '—' %></p>
+          <p class="text-gray-500 text-sm font-medium mt-1">Avg Rating ★</p>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+          <p class="text-3xl font-black text-green-600"><%= reviews.filter(r => r.rating >= 4).length %></p>
+          <p class="text-gray-500 text-sm font-medium mt-1">4-5 Star Reviews</p>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+          <p class="text-3xl font-black text-red-500"><%= reviews.filter(r => r.rating <= 2).length %></p>
+          <p class="text-gray-500 text-sm font-medium mt-1">1-2 Star Reviews</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Customer</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Product</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Rating</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Comment</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Date</th>
+                <th class="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest px-5 py-4">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <% if(reviews && reviews.length > 0) { %>
+                <% reviews.forEach(r => { %>
+                  <tr class="hover:bg-gray-50 transition">
+                    <td class="px-5 py-4">
+                      <p class="font-bold text-gray-900 text-sm"><%= r.user_name || 'Anonymous' %></p>
+                    </td>
+                    <td class="px-5 py-4">
+                      <a href="/product/<%= r.product_id %>" target="_blank" class="text-sm font-bold text-[#e09e2b] hover:underline"><%= r.product_name || 'Product #'+r.product_id %></a>
+                    </td>
+                    <td class="px-5 py-4">
+                      <div class="flex items-center gap-1">
+                        <% for(let i=1; i<=5; i++) { %>
+                          <svg class="w-3.5 h-3.5 <%= i <= r.rating ? 'text-[#f8bc45] fill-current' : 'text-gray-200 fill-current' %>" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <% } %>
+                        <span class="text-xs font-bold text-gray-600 ml-1"><%= r.rating %>.0</span>
+                      </div>
+                    </td>
+                    <td class="px-5 py-4 text-sm text-gray-600 font-medium max-w-xs">
+                      <p class="truncate"><%= r.comment %></p>
+                    </td>
+                    <td class="px-5 py-4 text-xs text-gray-400 font-medium">
+                      <%= r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short'}) : '—' %>
+                    </td>
+                    <td class="px-5 py-4">
+                      <form action="/owner/reviews/delete/<%= r.id %>" method="POST" onsubmit="return confirm('Delete this review?')">
+                        <button type="submit" class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr><td colspan="6" class="text-center py-16 text-gray-400">
+                  <p class="text-4xl mb-3">⭐</p>
+                  <p class="font-bold">No reviews yet</p>
+                </td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

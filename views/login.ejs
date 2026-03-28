@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Zila Collections</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Poppins', sans-serif; }
+    .glass-btn { background: linear-gradient(135deg, #f8bc45, #e09e2b); }
+    .btn-shine::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.25) 50%,transparent 100%); transform:translateX(-100%); transition:transform 0.5s ease; }
+    .btn-shine:hover::after { transform:translateX(100%); }
+    .input-field { transition: all 0.2s; }
+    .input-field:focus { border-color: #f8bc45; background: white; box-shadow: 0 0 0 3px rgba(248,188,69,0.1); }
+  </style>
+</head>
+<body class="bg-[#fdf6ec] min-h-screen flex items-center justify-center p-6">
+  
+  <!-- Background decorations -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-20 -right-20 w-96 h-96 bg-[#f8bc45]/20 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-20 -left-20 w-96 h-96 bg-[#fac5b5]/30 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative w-full max-w-md">
+    <!-- Logo -->
+    <div class="text-center mb-10">
+      <a href="/" class="inline-block">
+        <h1 class="text-5xl font-black tracking-tighter text-gray-900">Zila.</h1>
+        <p class="text-gray-400 font-medium text-sm mt-1">Collections</p>
+      </a>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 md:p-10">
+      <h2 class="text-3xl font-black text-gray-900 mb-2">Welcome back</h2>
+      <p class="text-gray-500 font-medium mb-8">Enter your details to access your account.</p>
+
+      <% if(locals.error) { %>
+        <div class="bg-red-50 border border-red-100 text-red-600 font-bold text-sm p-4 rounded-xl mb-6 flex items-center gap-2">
+          <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/login" method="POST" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Email Address</label>
+          <input type="email" name="email" placeholder="you@example.com" required
+            class="input-field w-full border-2 border-gray-200 bg-gray-50 p-4 rounded-xl outline-none font-medium text-sm">
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest">Password</label>
+          </div>
+          <input type="password" name="password" placeholder="••••••••" required
+            class="input-field w-full border-2 border-gray-200 bg-gray-50 p-4 rounded-xl outline-none font-medium text-sm">
+        </div>
+        <button type="submit" class="relative overflow-hidden w-full glass-btn btn-shine text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-xl text-sm mt-2">
+          Login to Account
+        </button>
+      </form>
+
+      <div class="mt-8 text-center">
+        <p class="text-gray-500 font-medium text-sm">
+          New to Zila? <a href="/register" class="text-[#e09e2b] font-black hover:underline">Create Account →</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Back link -->
+    <div class="text-center mt-6">
+      <a href="/" class="text-gray-400 hover:text-gray-600 transition font-medium text-sm flex items-center justify-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Back to Shop
+      </a>
+    </div>
+  </div>
+</body>
+</html>

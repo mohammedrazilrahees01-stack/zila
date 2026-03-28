@@ -1,0 +1,13 @@
+===================================================
+  QR CODE SETUP — READ THIS BEFORE GOING LIVE
+===================================================
+
+STEP 1: Open your UPI app (Google Pay / PhonePe / Paytm)
+STEP 2: Go to "Receive Money" > "Show QR Code"
+STEP 3: Take a screenshot or download the QR image
+STEP 4: Rename the file to:  qr.png
+STEP 5: Replace this file by uploading your qr.png
+         to this folder:  public/images/qr.png
+
+The checkout page will automatically display your QR!
+===================================================

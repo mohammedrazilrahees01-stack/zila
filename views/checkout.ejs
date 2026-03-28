@@ -1,32 +1,150 @@
 <%- include('partials/header') %>
 
-<div class="p-10 max-w-3xl mx-auto">
+<section class="bg-[#fdf6ec] min-h-screen pt-32 pb-20 px-6 font-['Poppins']">
+  <div class="max-w-5xl mx-auto">
+    
+    <div class="text-center mb-10">
+      <h1 class="text-4xl font-black text-gray-900 tracking-tight">Secure Checkout</h1>
+      <p class="text-gray-500 font-medium mt-2">Complete your order below</p>
+    </div>
 
-<h1 class="text-2xl mb-6">Checkout</h1>
+    <div class="grid md:grid-cols-5 gap-8 items-start">
+      
+      <!-- LEFT: Form (3 cols) -->
+      <div class="md:col-span-3">
+        <form action="/checkout" method="POST" id="checkout-form">
+          
+          <!-- 1. Shipping -->
+          <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-6">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-black text-sm">1</div>
+              <h2 class="text-lg font-bold uppercase tracking-wider text-gray-900">Shipping Address</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <input type="text" name="name" value="<%= userData && userData.name ? userData.name : '' %>" placeholder="Full Name"
+                class="col-span-2 border border-gray-200 p-4 rounded-xl w-full bg-gray-50 outline-none focus:border-black focus:bg-white transition font-medium text-sm" required>
+              <input type="tel" name="phone" value="<%= userData && userData.phone ? userData.phone : '' %>" placeholder="Phone Number"
+                class="col-span-2 border border-gray-200 p-4 rounded-xl w-full bg-gray-50 outline-none focus:border-black focus:bg-white transition font-medium text-sm" required>
+              <textarea name="address" placeholder="Full Address (House No., Street, Area)" rows="2"
+                class="col-span-2 border border-gray-200 p-4 rounded-xl w-full bg-gray-50 outline-none focus:border-black focus:bg-white transition font-medium text-sm resize-none" required><%= userData && userData.address ? userData.address : '' %></textarea>
+              <input type="text" name="city" value="<%= userData && userData.city ? userData.city : '' %>" placeholder="City"
+                class="border border-gray-200 p-4 rounded-xl w-full bg-gray-50 outline-none focus:border-black focus:bg-white transition font-medium text-sm" required>
+              <input type="text" name="pincode" value="<%= userData && userData.pincode ? userData.pincode : '' %>" placeholder="Pincode"
+                class="border border-gray-200 p-4 rounded-xl w-full bg-gray-50 outline-none focus:border-black focus:bg-white transition font-medium text-sm" required>
+            </div>
+          </div>
 
-<% cart.forEach(i => { %>
-<div class="mb-2">
-<%= i.name %> x <%= i.qty %> — AED <%= i.price * i.qty %>
-</div>
-<% }) %>
+          <!-- 2. Order Summary -->
+          <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-6">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-black text-sm">2</div>
+              <h2 class="text-lg font-bold uppercase tracking-wider text-gray-900">Order Review</h2>
+            </div>
+            <div class="space-y-3">
+              <% cart.forEach(item => { %>
+                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                  <div class="w-12 h-16 overflow-hidden rounded-lg bg-white flex-shrink-0">
+                    <img src="/images/<%= item.image %>" class="w-full h-full object-cover">
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-bold text-gray-900 text-sm truncate"><%= item.name %></p>
+                    <p class="text-xs text-gray-400">Size: <span class="font-bold text-gray-600"><%= item.size %></span> · Qty: <span class="font-bold"><%= item.qty %></span></p>
+                  </div>
+                  <p class="font-black text-gray-900 text-sm flex-shrink-0">₹<%= item.price * item.qty %></p>
+                </div>
+              <% }) %>
+            </div>
+            <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
+              <span class="font-black text-gray-900">Total</span>
+              <span class="text-2xl font-black text-[#e09e2b]">₹<%= total %></span>
+            </div>
+          </div>
 
-<h3 class="mt-4 mb-4">Total: AED <%= total %></h3>
+          <!-- 3. Payment -->
+          <div class="bg-[#fdf6ec] border-2 border-[#f8bc45] rounded-3xl p-8 mb-8">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 bg-[#f8bc45] text-black rounded-full flex items-center justify-center font-black text-sm">3</div>
+              <h2 class="text-lg font-bold uppercase tracking-wider text-gray-900">Payment (Scan & Pay)</h2>
+            </div>
+            
+            <p class="text-gray-600 text-sm mb-6 text-center">
+              Scan the QR code using <strong class="text-black">GPay, PhonePe, or Paytm</strong> to pay <strong class="text-[#e09e2b] text-xl">₹<%= total %></strong>
+            </p>
 
-<form action="/place-order" method="POST" class="space-y-4">
+            <div class="flex justify-center mb-6">
+              <div class="bg-white p-4 rounded-2xl shadow-lg border-2 border-[#f8bc45]/30 inline-block">
+                <img src="/images/qr.png" alt="Payment QR" class="w-44 h-44 object-contain" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ZilaCollectionsPayment&bgcolor=ffffff&color=000000'">
+              </div>
+            </div>
 
-<select name="payment" class="w-full p-3 text-black">
-<option value="cod">Cash on Delivery</option>
-<option value="manual">Manual Payment (QR)</option>
-</select>
+            <div class="bg-white border border-gray-200 rounded-2xl p-5">
+              <label class="block text-sm font-bold text-gray-900 mb-2">
+                Enter UTR / Reference Number <span class="text-red-500">*</span>
+              </label>
+              <input type="text" name="payment_ref" placeholder="e.g. 301234567890"
+                class="border-2 border-gray-200 p-4 rounded-xl w-full outline-none focus:border-[#f8bc45] font-mono tracking-widest text-base bg-gray-50 transition" required
+                pattern="[0-9]{10,20}" title="Enter 10-20 digit transaction number">
+              <p class="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Enter the transaction reference number after successful payment
+              </p>
+            </div>
+          </div>
 
-<input name="address" placeholder="Delivery Address" class="w-full p-3 text-black">
+          <button type="submit" id="submit-btn"
+            class="w-full relative overflow-hidden glass-btn btn-shine text-white font-black uppercase tracking-widest py-5 rounded-2xl shadow-2xl text-base">
+            <span id="btn-text">Confirm & Place Order</span>
+          </button>
+          <p class="text-center text-xs text-gray-400 mt-3 flex items-center justify-center gap-2">
+            <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Your order data is secure and encrypted
+          </p>
+        </form>
+      </div>
 
-<button class="bg-white text-black px-6 py-3 w-full">
-Place Order
-</button>
+      <!-- RIGHT: Trust + Info (2 cols) -->
+      <div class="md:col-span-2 space-y-6">
+        <!-- Trust Badges -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+          <h3 class="font-black text-gray-900 text-sm uppercase tracking-wide mb-4">Why Shop With Us?</h3>
+          <div class="space-y-3">
+            <% [
+              {icon:'🔒', t:'Secure Payment', d:'Your info is safe with us'},
+              {icon:'🚀', t:'Fast Shipping', d:'3-5 business days PAN India'},
+              {icon:'🔄', t:'Easy Returns', d:'7-day hassle-free returns'},
+              {icon:'💬', t:'24/7 Support', d:'Available on WhatsApp'}
+            ].forEach(b => { %>
+              <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <span class="text-xl"><%= b.icon %></span>
+                <div>
+                  <p class="font-bold text-gray-900 text-xs"><%= b.t %></p>
+                  <p class="text-gray-500 text-[10px]"><%= b.d %></p>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
 
-</form>
+        <!-- Support -->
+        <div class="bg-[#fdf6ec] border border-[#f8bc45]/30 rounded-2xl p-5 text-center">
+          <p class="text-sm font-bold text-gray-900 mb-2">Need Help?</p>
+          <a href="https://wa.me/918075437816" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-green-600 transition">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+            Chat on WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-</div>
+<script>
+  document.getElementById('checkout-form').addEventListener('submit', function() {
+    const btn = document.getElementById('submit-btn');
+    const text = document.getElementById('btn-text');
+    btn.disabled = true;
+    text.innerHTML = '⏳ Placing Order...';
+  });
+</script>
 
 <%- include('partials/footer') %>
