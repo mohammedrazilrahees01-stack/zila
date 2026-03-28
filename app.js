@@ -156,13 +156,23 @@ const sanitize = (str) => String(str || '').replace(/[<>'"]/g, '').trim();
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // HOME
-app.get('/', async (req, res) => {
+app.get('/', async (req, res) => { /* SEO:home */
   try {
     const products = await dbAll(`SELECT * FROM products WHERE stock > 0 ORDER BY created_at DESC LIMIT 8`);
-    res.render('index', { products });
+    res.render('index', { products,
+      pageTitle: 'Zila Collections | Premium Streetwear – Kannur, Kerala',
+      pageDesc: 'Shop premium streetwear & trending fashion at Zila Collections. Exclusive hoodies, tees & drops. Based in Kannur, Kerala. Fast delivery across India.',
+      pageCanonical: 'https://zilacollections.com/',
+      ogType: 'website',
+      jsonLd: { '@context':'https://schema.org','@type':'ClothingStore','name':'Zila Collections','url':'https://zilacollections.com','logo':'https://zilacollections.com/images/zila.png','description':'Premium streetwear from Kannur, Kerala','address':{'@type':'PostalAddress','addressLocality':'Kannur','addressRegion':'Kerala','addressCountry':'IN'},'telephone':'+918075437816','email':'zilacollections@gmail.com','sameAs':['https://instagram.com/zilacollections','https://wa.me/918075437816'] }
+    });
   } catch (err) {
     console.error(err);
-    res.render('index', { products: [] });
+    res.render('index', { products: [],
+      pageTitle: 'Zila Collections | Premium Streetwear – Kannur, Kerala',
+      pageDesc: 'Shop premium streetwear & trending fashion at Zila Collections.',
+      pageCanonical: 'https://zilacollections.com/'
+    });
   }
 });
 
@@ -190,10 +200,19 @@ app.get('/shop', async (req, res) => {
     sql += ` ORDER BY ${sortMap[sort] || 'created_at DESC'}`;
     const products = await dbAll(sql, params);
     const categories = await dbAll(`SELECT DISTINCT category FROM products ORDER BY category`);
-    res.render('shop', { products, categories, search, currentCategory: category, currentSort: sort, min: Number(min) || 0, max: Number(max) || 999999 });
+    res.render('shop', { products, categories, search, currentCategory: category, currentSort: sort, min: Number(min) || 0, max: Number(max) || 999999,
+      pageTitle: 'Shop – Zila Collections | Streetwear & Fashion',
+      pageDesc: 'Browse our full collection of premium streetwear, hoodies, tees & more at Zila Collections. New drops added regularly.',
+      pageCanonical: 'https://zilacollections.com/shop',
+      pageKeywords: 'shop streetwear, buy hoodies Kerala, fashion online India, Zila Collections shop'
+    });
   } catch (err) {
     console.error(err);
-    res.render('shop', { products: [], categories: [], search: '', currentCategory: '', currentSort: 'newest', min: 0, max: 999999 });
+    res.render('shop', { products: [], categories: [], search: '', currentCategory: '', currentSort: 'newest', min: 0, max: 999999,
+      pageTitle: 'Shop – Zila Collections | Streetwear & Fashion',
+      pageDesc: 'Browse our full collection of premium streetwear at Zila Collections.',
+      pageCanonical: 'https://zilacollections.com/shop'
+    });
   }
 });
 
@@ -216,7 +235,15 @@ app.get('/product/:id', async (req, res) => {
     }
     if (!req.session.recentlyViewed) req.session.recentlyViewed = [];
     req.session.recentlyViewed = [product.id, ...req.session.recentlyViewed.filter(id => id !== product.id)].slice(0, 10);
-    res.render('product', { product, variants, reviews, related, inWishlist, user: req.session.user });
+    res.render('product', { product, variants, reviews, related, inWishlist, user: req.session.user,
+      pageTitle: (product.name || 'Product') + ' – Zila Collections',
+      pageDesc: (product.description ? product.description.substring(0,150) : product.name) + ' – Shop at Zila Collections, Kannur Kerala.',
+      pageCanonical: 'https://zilacollections.com/product/' + product.id,
+      ogType: 'product',
+      ogImage: product.image ? 'https://zilacollections.com/' + product.image : 'https://zilacollections.com/images/zila.png',
+      pageKeywords: (product.name || '') + ', streetwear, fashion Kerala, Zila Collections',
+      jsonLd: { '@context':'https://schema.org','@type':'Product','name': product.name,'description': product.description || product.name,'image': product.image ? 'https://zilacollections.com/' + product.image : 'https://zilacollections.com/images/zila.png','brand':{'@type':'Brand','name':'Zila Collections'},'offers':{'@type':'Offer','price': product.price,'priceCurrency':'INR','availability':'https://schema.org/InStock','url':'https://zilacollections.com/product/' + product.id} }
+    });
   } catch (err) {
     console.error(err);
     res.redirect('/shop');
@@ -257,7 +284,7 @@ app.get('/cart', async (req, res) => {
       upsell = await dbAll(`SELECT * FROM products WHERE id NOT IN (${placeholders}) AND stock > 0 ORDER BY RANDOM() LIMIT 4`, ids);
     }
   } catch (err) { console.error(err); }
-  res.render('cart', { cart, cartTotal, upsell });
+  res.render('cart', { pageTitle: 'Your Cart – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'Your Cart – Zila Collections', pageRobots: 'noindex, nofollow', cart, cartTotal, upsell });
 });
 
 app.post('/cart/update/:index', async (req, res) => {
@@ -293,9 +320,9 @@ app.get('/checkout', isAuthenticated, async (req, res) => {
   const total = cartTotal + shipping;
   try {
     const userData = await dbGet(`SELECT * FROM users WHERE id = ?`, [req.session.user.id]) || {};
-    res.render('checkout', { cart, total, userData });
+    res.render('checkout', { pageTitle: 'Checkout – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'Checkout – Zila Collections', pageRobots: 'noindex, nofollow', cart, total, userData });
   } catch (err) {
-    res.render('checkout', { cart, total, userData: {} });
+    res.render('checkout', { pageTitle: 'Checkout – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'Checkout – Zila Collections', pageRobots: 'noindex, nofollow', cart, total, userData: {} });
   }
 });
 
@@ -326,15 +353,15 @@ app.post('/checkout', isAuthenticated, async (req, res) => {
 app.get('/orders', isAuthenticated, async (req, res) => {
   try {
     const orders = await dbAll(`SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC`, [req.session.user.id]);
-    res.render('orders', { orders });
-  } catch (err) { res.render('orders', { orders: [] }); }
+    res.render('orders', { pageTitle: 'My Orders – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'My Orders – Zila Collections', pageRobots: 'noindex, nofollow', orders });
+  } catch (err) { res.render('orders', { pageTitle: 'My Orders – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'My Orders – Zila Collections', pageRobots: 'noindex, nofollow', orders: [] }); }
 });
 
 app.get('/orders/:id', isAuthenticated, async (req, res) => {
   try {
     const order = await dbGet(`SELECT * FROM orders WHERE id = ? AND user_id = ?`, [req.params.id, req.session.user.id]);
     if (!order) return res.redirect('/orders');
-    res.render('order-details', { order });
+    res.render('order-details', { pageTitle: 'Order Details – Zila Collections', pageRobots: 'noindex, nofollow', order });
   } catch { res.redirect('/orders'); }
 });
 
@@ -343,8 +370,8 @@ app.get('/account', isAuthenticated, async (req, res) => {
   try {
     const userData = await dbGet(`SELECT * FROM users WHERE id = ?`, [req.session.user.id]);
     const recentOrders = await dbAll(`SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 3`, [req.session.user.id]);
-    res.render('account', { userData, recentOrders, error: req.query.error || null });
-  } catch (err) { res.render('account', { userData: {}, recentOrders: [], error: null }); }
+    res.render('account', { pageTitle: 'My Account – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'My Account – Zila Collections', pageRobots: 'noindex, nofollow', userData, recentOrders, error: req.query.error || null });
+  } catch (err) { res.render('account', { pageTitle: 'My Account – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'My Account – Zila Collections', pageRobots: 'noindex, nofollow', userData: {}, recentOrders: [], error: null }); }
 });
 
 app.post('/account/update', isAuthenticated, async (req, res) => {
@@ -375,8 +402,8 @@ app.get('/wishlist', isAuthenticated, async (req, res) => {
       INNER JOIN wishlist w ON p.id = w.product_id
       WHERE w.user_id = ?
     `, [req.session.user.id]);
-    res.render('wishlist', { wishlist });
-  } catch { res.render('wishlist', { wishlist: [] }); }
+    res.render('wishlist', { pageTitle: 'My Wishlist – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'My Wishlist – Zila Collections', pageRobots: 'noindex, nofollow', wishlist });
+  } catch { res.render('wishlist', { pageTitle: 'My Wishlist – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'My Wishlist – Zila Collections', pageRobots: 'noindex, nofollow', wishlist: [] }); }
 });
 
 app.post('/add-wishlist/:id', isAuthenticated, async (req, res) => {
@@ -412,9 +439,14 @@ app.post('/add-review', isAuthenticated, async (req, res) => {
 });
 
 // ─── AUTH ─────────────────────────────────────────────────────────────────────
-app.get('/login', (req, res) => {
+app.get('/login', (req, res) => { /* SEO:login */
   if (req.session.user) return res.redirect(req.session.user.role === 'owner' ? '/owner' : '/');
-  res.render('login', { error: null });
+  res.render('login', { error: null,
+      pageTitle: 'Login – Zila Collections',
+      pageDesc: 'Sign in to your Zila Collections account to track orders, manage wishlist and more.',
+      pageCanonical: 'https://zilacollections.com/login',
+      pageRobots: 'noindex, nofollow'
+    });
 });
 
 app.post('/login', async (req, res) => {
@@ -435,9 +467,14 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/register', (req, res) => {
+app.get('/register', (req, res) => { /* SEO:register */
   if (req.session.user) return res.redirect('/');
-  res.render('register', { error: null });
+  res.render('register', { error: null,
+      pageTitle: 'Create Account – Zila Collections',
+      pageDesc: 'Join Zila Collections. Create your account for exclusive deals, order tracking and wishlist.',
+      pageCanonical: 'https://zilacollections.com/register',
+      pageRobots: 'noindex, nofollow'
+    });
 });
 
 app.post('/register', async (req, res) => {
@@ -506,7 +543,13 @@ app.post(OWNER_ROUTE + '/auth', async (req, res) => {
 });
 
 // ─── STATIC PAGES ────────────────────────────────────────────────────────────
-app.get('/contact', (req, res) => res.render('contact'));
+app.get('/contact', (req, res) => res.render('contact', {
+      pageTitle: 'Contact Us – Zila Collections | Kannur, Kerala',
+      pageDesc: 'Get in touch with Zila Collections. WhatsApp: +91 80754 37816 | Email: zilacollections@gmail.com | Based in Kannur, Kerala, India.',
+      pageCanonical: 'https://zilacollections.com/contact',
+      pageKeywords: 'Zila Collections contact, Kannur fashion shop, WhatsApp order fashion Kerala',
+      jsonLd: { '@context':'https://schema.org','@type':'ContactPage','name':'Contact Zila Collections','url':'https://zilacollections.com/contact','mainEntity':{'@type':'ClothingStore','name':'Zila Collections','telephone':'+918075437816','email':'zilacollections@gmail.com','address':{'@type':'PostalAddress','addressLocality':'Kannur','addressRegion':'Kerala','addressCountry':'IN'}} }
+    }));
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // OWNER ROUTES

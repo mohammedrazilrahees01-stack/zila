@@ -2,8 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="google-site-verification" content="0TZpSNMYEQMu-5ajBGWMOgvY-dJnABdej9Ri6D4czNk" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zila Collections | Premium Streetwear</title>
+
+  <!-- ── DYNAMIC SEO META ── -->
+  <title><%= typeof pageTitle !== "undefined" ? pageTitle : "Zila Collections | Premium Streetwear – Kannur, Kerala" %></title>
+  <meta name="description" content="<%= typeof pageDesc !== "undefined" ? pageDesc : "Zila Collections – Premium streetwear, trending fashion & exclusive drops. Shop hoodies, tees & more. Based in Kannur, Kerala. Fast delivery across India." %>">
+  <meta name="keywords" content="<%= typeof pageKeywords !== "undefined" ? pageKeywords : "Zila Collections, streetwear Kannur, fashion Kerala, hoodies India, trendy clothes, premium fashion, online shopping Kerala" %>">
+  <meta name="author" content="Zila Collections">
+  <meta name="robots" content="<%= typeof pageRobots !== "undefined" ? pageRobots : "index, follow" %>">
+  <link rel="canonical" href="<%= typeof pageCanonical !== "undefined" ? pageCanonical : "https://zilacollections.com" %>">
+
+  <!-- ── OPEN GRAPH (Facebook / WhatsApp) ── -->
+  <meta property="og:type" content="<%= typeof ogType !== "undefined" ? ogType : "website" %>">
+  <meta property="og:title" content="<%= typeof pageTitle !== "undefined" ? pageTitle : "Zila Collections | Premium Streetwear" %>">
+  <meta property="og:description" content="<%= typeof pageDesc !== "undefined" ? pageDesc : "Zila Collections – Premium streetwear & trending fashion from Kannur, Kerala. Shop now!" %>">
+  <meta property="og:url" content="<%= typeof pageCanonical !== "undefined" ? pageCanonical : "https://zilacollections.com" %>">
+  <meta property="og:image" content="<%= typeof ogImage !== "undefined" ? ogImage : "https://zilacollections.com/images/zila.png" %>">
+  <meta property="og:site_name" content="Zila Collections">
+  <meta property="og:locale" content="en_IN">
+
+  <!-- ── TWITTER CARD ── -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= typeof pageTitle !== "undefined" ? pageTitle : "Zila Collections | Premium Streetwear" %>">
+  <meta name="twitter:description" content="<%= typeof pageDesc !== "undefined" ? pageDesc : "Shop premium streetwear at Zila Collections. Kannur, Kerala." %>">
+  <meta name="twitter:image" content="<%= typeof ogImage !== "undefined" ? ogImage : "https://zilacollections.com/images/zila.png" %>">
+
+  <!-- ── STRUCTURED DATA (JSON-LD) ── -->
+  <% if (typeof jsonLd !== "undefined") { %>
+    <script type="application/ld+json"><%- JSON.stringify(jsonLd) %></script>
+  <% } %>
+
+  <!-- ── FAVICON ── -->
+  <link rel="icon" type="image/png" href="/images/zila.png">
+  <link rel="apple-touch-icon" href="/images/zila.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>

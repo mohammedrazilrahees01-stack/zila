@@ -1,0 +1,31 @@
+# ── Zila Collections | robots.txt ──
+# zilacollections.com
+
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /product/
+Allow: /contact
+Allow: /about
+Allow: /login
+Allow: /register
+
+# Block private pages
+Disallow: /owner
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /account
+Disallow: /wishlist
+Disallow: /admin
+Disallow: /uploads/
+
+# Block query strings on shop (duplicate content)
+Disallow: /shop?*sort=
+Disallow: /shop?*search=
+
+# Crawl delay
+Crawl-delay: 1
+
+# Sitemap
+Sitemap: https://zilacollections.com/sitemap.xml
