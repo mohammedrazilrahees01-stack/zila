@@ -85,6 +85,12 @@ db.serialize(() => {
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
   )`);
+
+  // ✅ ADD THIS LINE HERE
+  db.run(`DELETE FROM users WHERE role = 'owner'`, (err) => {
+    if (!err) console.log("🧹 Old owner deleted");
+  });
+  
   console.log('✅ Database tables ready');
 });
 
