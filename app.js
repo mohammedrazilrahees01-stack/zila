@@ -1,4 +1,7 @@
 require('dotenv').config();
+console.log("ENV CHECK:");
+console.log("EMAIL:", process.env.OWNER_EMAIL);
+console.log("PASSWORD:", process.env.OWNER_PASSWORD);
 const express = require('express');
 const session = require('express-session');
 const multer = require('multer');
@@ -90,7 +93,7 @@ db.serialize(() => {
   db.run(`DELETE FROM users WHERE role = 'owner'`, (err) => {
     if (!err) console.log("🧹 Old owner deleted");
   });
-  
+
   console.log('✅ Database tables ready');
 });
 
@@ -515,9 +518,12 @@ app.get(OWNER_ROUTE, (req, res) => {
 });
 
 app.post(OWNER_ROUTE + '/auth', async (req, res) => {
-  const { email, password } = req.body;
-  const ownerEmail = process.env.OWNER_EMAIL;
-  const ownerPassword = process.env.OWNER_PASSWORD;
+const { email, password } = req.body;
+const ownerEmail = process.env.OWNER_EMAIL;
+const ownerPassword = process.env.OWNER_PASSWORD;
+
+console.log("LOGIN TRY:", email, password);
+console.log("ENV:", ownerEmail, ownerPassword);
   if (!ownerEmail || !ownerPassword) {
     return res.render('owner-login', { error: 'Owner credentials not configured in .env', loginRoute: OWNER_ROUTE + '/auth' });
   }
