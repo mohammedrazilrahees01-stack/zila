@@ -8,7 +8,7 @@ const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
 
 // ─── DATABASE SETUP ────────────────────────────────────────────────────────────
 const db = new sqlite3.Database('./database.db', (err) => {
@@ -802,14 +802,18 @@ app.use((req, res) => {
   `);
 });
 
+
+
 app.use((err, req, res, next) => {
   console.error('Server Error:', err);
   res.status(500).send('<h1>Something went wrong.</h1><a href="/">Go Home</a>');
 });
 
 // ─── START ────────────────────────────────────────────────────────────────────
+// ─── START ────────────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`\n🚀 Zila Collections running at http://localhost:${PORT}`);
   console.log(`👑 Admin login: http://localhost:${PORT}${OWNER_ROUTE}\n`);
 });
-
