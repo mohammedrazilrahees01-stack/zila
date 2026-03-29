@@ -515,7 +515,7 @@ app.post(OWNER_ROUTE + '/auth', async (req, res) => {
   if (!ownerEmail || !ownerPassword) {
     return res.render('owner-login', { error: 'Owner credentials not configured in .env', loginRoute: OWNER_ROUTE + '/auth' });
   }
-  if (email !== ownerEmail) {
+  if (email.toLowerCase().trim() !== ownerEmail.toLowerCase().trim()) {
     return res.render('owner-login', { error: 'Invalid credentials.', loginRoute: OWNER_ROUTE + '/auth' });
   }
   try {
@@ -526,7 +526,7 @@ app.post(OWNER_ROUTE + '/auth', async (req, res) => {
       ownerUser = await dbGet(`SELECT * FROM users WHERE id = ?`, [result.lastID]);
     }
     const match = await bcrypt.compare(password, ownerUser.password);
-    const plainMatch = password === ownerPassword;
+    const plainMatch = password.trim() === ownerPassword.trim();
     if (!match && !plainMatch) {
       return res.render('owner-login', { error: 'Invalid credentials.', loginRoute: OWNER_ROUTE + '/auth' });
     }
