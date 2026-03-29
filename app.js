@@ -361,11 +361,27 @@ app.post('/checkout', isAuthenticated, async (req, res) => {
 // ─── ORDERS ────────────────────────────────────────────────────────────────────
 app.get('/orders', isAuthenticated, async (req, res) => {
   try {
-    const orders = await dbAll(`SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC`, [req.session.user.id]);
-    res.render('orders', { pageTitle: 'My Orders – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'My Orders – Zila Collections', pageRobots: 'noindex, nofollow', orders });
-  } catch (err) { res.render('orders', { pageTitle: 'My Orders – Zila Collections', pageRobots: 'noindex, nofollow', pageTitle: 'My Orders – Zila Collections', pageRobots: 'noindex, nofollow', orders: [] }); }
-});
+    const orders = await dbAll(
+      `SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC`,
+      [req.session.user.id]
+    ) || [];
 
+    res.render('orders', {
+      pageTitle: 'My Orders – Zila Collections',
+      pageRobots: 'noindex, nofollow',
+      orders
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.render('orders', {
+      pageTitle: 'My Orders – Zila Collections',
+      pageRobots: 'noindex, nofollow',
+      orders: []
+    });
+  }
+});
 app.get('/orders/:id', isAuthenticated, async (req, res) => {
   try {
     const order = await dbGet(`SELECT * FROM orders WHERE id = ? AND user_id = ?`, [req.params.id, req.session.user.id]);
